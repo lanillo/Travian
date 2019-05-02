@@ -25,6 +25,9 @@ namespace TravianBot
         static string username;
         static string password;
 
+        static readonly int RaidNormalAmount = 10;
+        static readonly bool BuyStuff = true;
+
         static Data data;
         static int TimeBeforeAttackLands;
 
@@ -71,7 +74,8 @@ namespace TravianBot
 
             while (true)
             {
-                SendAttackToVillages(villagesToAttack);
+                SendAttackToVillages(villagesToAttack, RaidNormalAmount, BuyStuff);
+                SendAttackToOasis(oasisToAttack, RaidNormalAmount, BuyStuff);
             }            
         }
 
@@ -170,17 +174,53 @@ namespace TravianBot
             }
         }
 
+        public bool CheckIfEnoughTroops(int minimumAmount)
+        {
+            var legionnaireAmountText = "";
+            int legionnaireAmount = 0;
+
+            try
+            {
+                legionnaireAmountText = chromeDriver.FindElement(By.XPath(Localization.XPath_legionnaireAmount)).Text;
+            }
+            catch (Exception)
+            {
+                return false;                
+            }
+
+            if (legionnaireAmount < minimumAmount)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+
+
+        }
+
         #endregion
 
         #region Attacks
 
-        public void SendAttackToOasis(List<int> oasisToAttack, bool mustBeEmpty = true)
+        public void SendAttackToOasis(List<int> oasisToAttack, int troopAmount, bool isBuying, bool mustBeEmpty = true)
         {
             if (mustBeEmpty)
             {
                 for (int i = 0; i < oasisToAttack.Count; i++)
                 {
                     var grid = data.Oases[i];
+
+                    while (!CheckIfEnoughTroops(troopAmount))
+                    {
+                        Debug.WriteLine($"No enough troops in the village for attack");
+                        if (isBuying)
+                        {
+                            BuyTroops();
+                        }
+                    }
 
                     if (CheckForTroopsInOasis(grid.X, grid.Y))
                     {
@@ -200,13 +240,22 @@ namespace TravianBot
             }
         }
 
-        public void SendAttackToVillages(List<int> number)
+        public void SendAttackToVillages(List<int> number, int troopAmount, bool isBuying)
         {
             for (int i = 0; i < number.Count; i++)
             {
                 var grid = data.Villages[number[i]];
 
-                if (SendAttack(grid.X, grid.Y, 5, allTroops: true))
+                while (!CheckIfEnoughTroops(troopAmount))
+                {
+                    Debug.WriteLine($"No enough troops in the village for attack");
+                    if (isBuying)
+                    {
+                        BuyTroops();
+                    }
+                }
+
+                if (SendAttack(grid.X, grid.Y, troopAmount))
                 {
                     data.Villages[i].IsAttacked = true;
                     log.Info($"Attack in X: {grid.X} - Y: {grid.Y} will land in " + TimeBeforeAttackLands.ToString());
@@ -217,6 +266,37 @@ namespace TravianBot
                     LoggedWait(TimeBeforeAttackLands);
                     data.Villages[i].IsAttacked = false;
                 }
+            }
+        }
+
+        private void BuyTroops()
+        {
+            RefreshRessources();
+
+            if (currentWood < 120 || currentWheat < 30 || currentIron < 150 || currentClay < 100)
+            {
+                Debug.WriteLine($"Not enough ressources for 1 unit :(");
+
+                Random random = new Random();
+                var waitTime = random.Next(10000, 20000);
+                Debug.WriteLine($"Not enough ressources for 1 unit, waiting for {waitTime/1000} secs.");
+                Wait(waitTime);
+                return;
+            }
+
+            try
+            {
+                Debug.WriteLine($"Trying to build units");
+                var buyAllLegionnaireBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_buyAllLegionnaire));
+                buyAllLegionnaireBtn.Click();
+
+                Wait(1000);
+                var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
+                trainBtn.Click();
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine($"Not enough ressources for 1 unit :(");
             }
         }
 

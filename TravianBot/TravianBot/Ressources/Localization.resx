@@ -183,4 +183,13 @@
   <data name="XPath_raid" xml:space="preserve">
     <value>//*[@id="build"]/div[2]/form/div[2]/label[3]/input</value>
   </data>
+  <data name="XPath_legionnaireAmount" xml:space="preserve">
+    <value>//*[@id="troops"]/tbody/tr[1]/td[1]/a</value>
+  </data>
+  <data name="XPath_buyAllLegionnaire" xml:space="preserve">
+    <value>//*[@id="nonFavouriteTroops"]/div[1]/div/div[2]/div[4]/a</value>
+  </data>
+  <data name="XPath_train_troops" xml:space="preserve">
+    <value>//*[@id="s1"]</value>
+  </data>
 </root>

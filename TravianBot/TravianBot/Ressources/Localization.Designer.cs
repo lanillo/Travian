@@ -178,6 +178,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;nonFavouriteTroops&quot;]/div[1]/div/div[2]/div[4]/a.
+        /// </summary>
+        internal static string XPath_buyAllLegionnaire {
+            get {
+                return ResourceManager.GetString("XPath_buyAllLegionnaire", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //*[@id=&quot;btn_ok&quot;].
         /// </summary>
         internal static string XPath_ConfirmBtn {
@@ -214,6 +223,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;troops&quot;]/tbody/tr[1]/td[1]/a.
+        /// </summary>
+        internal static string XPath_legionnaireAmount {
+            get {
+                return ResourceManager.GetString("XPath_legionnaireAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //*[@id=&quot;troop_info&quot; and @class=&quot;transparent&quot;]/tbody/tr[1].
         /// </summary>
         internal static string XPath_oasis_troops {
@@ -237,6 +255,15 @@ namespace TravianBot.Ressources {
         internal static string XPath_raid {
             get {
                 return ResourceManager.GetString("XPath_raid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;s1&quot;].
+        /// </summary>
+        internal static string XPath_train_troops {
+            get {
+                return ResourceManager.GetString("XPath_train_troops", resourceCulture);
             }
         }
         

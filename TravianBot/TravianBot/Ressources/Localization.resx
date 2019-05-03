@@ -201,4 +201,7 @@
   <data name="XPath_buyXLegionnaire" xml:space="preserve">
     <value>//*[@id="nonFavouriteTroops"]/div[1]/div/div[2]/div[4]/input</value>
   </data>
+  <data name="XPath_troops_row_two" xml:space="preserve">
+    <value>//*[@id="troops"]/tbody/tr[2]</value>
+  </data>
 </root>

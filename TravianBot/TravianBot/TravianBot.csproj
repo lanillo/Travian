@@ -61,9 +61,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Functionnalities\Data.cs" />
+    <Compile Include="Functionnalities\Utilities\AttackTargets.cs" />
     <Compile Include="Functionnalities\Enums\Tabs.cs" />
-    <Compile Include="Functionnalities\Utilities.cs" />
+    <Compile Include="Functionnalities\Utilities\Utilities.cs" />
     <Compile Include="Ressources\Constants.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

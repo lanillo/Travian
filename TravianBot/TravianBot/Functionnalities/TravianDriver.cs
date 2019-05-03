@@ -1,12 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using TravianBot.Ressources;
-using TravianBot.Functionnalities.Enums;
-using TravianBot.Functionnalities;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+
+using TravianBot.Ressources;
+using TravianBot.Functionnalities.Data;
+using TravianBot.Functionnalities.Enums;
+using TravianBot.Functionnalities.Utilities;
 
 namespace TravianBot
 {
@@ -25,15 +29,16 @@ namespace TravianBot
         static string username;
         static string password;
 
-        static readonly int RaidNormalAmount = 10;
+        static readonly int RaidNormalAmount = 5;
         static readonly bool BuyStuff = true;
+        static readonly int BuyingLevel = 20;
 
-        static Data data;
+        static AttackTargets targets;
         static int TimeBeforeAttackLands;
 
         public Functionalities()
         {
-            data = Utilities.GetDataJson(System.IO.Path.GetFullPath(@"..\..\Ressources\data.json"));
+            targets = Utilities.GetDataJson(System.IO.Path.GetFullPath(@"..\..\Ressources\data.json"));
         }
 
         [AssemblyInitialize]
@@ -53,12 +58,12 @@ namespace TravianBot
             List<int> villagesToAttack = new List<int>();
             List<int> oasisToAttack = new List<int>();
             
-            for (int i = 0; i < data.Villages.Count; i++)
+            for (int i = 0; i < targets.Villages.Count; i++)
             {
                 villagesToAttack.Add(i);
             }
 
-            for (int i = 0; i < data.Oases.Count; i++)
+            for (int i = 0; i < targets.Oases.Count; i++)
             {
                 oasisToAttack.Add(i);
             }
@@ -191,9 +196,22 @@ namespace TravianBot
                 var splitted_text = legionnaireAmountText.Split(' ');
 
                 bool isLegionnaire = splitted_text[1] == "Legionnaires";
-                
+                bool isHero = splitted_text[1] == "Hero";
                 bool isHigherThanMinimumAmount = int.Parse(splitted_text[0]) >= minimumAmount;
-                Debug.WriteLine($"We have this in first row {legionnaireAmountText}");
+
+                Debug.WriteLine($"We have this in first row: {legionnaireAmountText}");
+
+                if (isHero)
+                {
+                    legionnaireAmountText = chromeDriver.FindElement(By.XPath(Localization.XPath_troops_row_two)).Text;
+                    splitted_text = legionnaireAmountText.Split(' ');
+
+                    isLegionnaire = splitted_text[1] == "Legionnaires";
+                    isHigherThanMinimumAmount = int.Parse(splitted_text[0]) >= minimumAmount;
+
+                    Debug.WriteLine($"We have this in second row: {legionnaireAmountText}");
+                }
+                
                 if (!isLegionnaire)
                 {
                     return false;
@@ -222,7 +240,7 @@ namespace TravianBot
             {
                 for (int i = 0; i < oasisToAttack.Count; i++)
                 {
-                    var grid = data.Oases[i];
+                    var grid = targets.Oases[i];
 
                     Random random = new Random();
                     var randomWait = random.Next(2500, 20000);
@@ -235,7 +253,7 @@ namespace TravianBot
                         Debug.WriteLine($"No enough troops in the village for attack");
                         if (isBuying)
                         {
-                            BuyTroops();
+                            BuyTroops(BuyingLevel);
                         }
                     }
 
@@ -243,14 +261,14 @@ namespace TravianBot
                     {
                         if (SendAttack(grid.X, grid.Y, 5))
                         {
-                            data.Oases[i].IsAttacked = true;
+                            targets.Oases[i].IsAttacked = true;
 
                             log.Info("Attack will land in " + TimeBeforeAttackLands.ToString());
 
                             Debug.WriteLine($"Attacking X: {grid.X} - Y: {grid.Y}.");
                             Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
 
-                            data.Oases[i].IsAttacked = false;
+                            targets.Oases[i].IsAttacked = false;
                         }
                     }
                 }
@@ -261,42 +279,51 @@ namespace TravianBot
         {
             for (int i = 0; i < number.Count; i++)
             {
-                var grid = data.Villages[number[i]];
+                var grid = targets.Villages[number[i]];
 
-                Debug.WriteLine($"----- Attacking village # {i.ToString()} -----");
-                Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
-                Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
-
-                Random random = new Random();
-                var randomWait = random.Next(2500, 10000);
-
-                Debug.WriteLine($"Random wait to not get banned");
-                LoggedWait(randomWait);
-
-                while (!CheckIfEnoughTroops(troopAmount))
+                if (!grid.CanRaid)
                 {
-                    Debug.WriteLine($"Not enough troops in the village for attack");
-                    if (isBuying)
-                    {
-                        BuyTroops();
-                    }
-                    else
-                    {
-                        Debug.Write("Not buying troops");
-                    }
+                    Debug.WriteLine($"----- Village # {i.ToString()} cannot be attacked -----");
+                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
+                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
                 }
-
-                if (SendAttack(grid.X, grid.Y, troopAmount))
+                else
                 {
-                    data.Villages[i].IsAttacked = true;
-                    log.Info($"Attack in X: {grid.X} - Y: {grid.Y} will land in " + TimeBeforeAttackLands.ToString());
+                    Debug.WriteLine($"----- Attacking village # {i.ToString()} -----");
+                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
+                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
 
-                    Debug.WriteLine($"Attacking X: {grid.X} - Y: {grid.Y}.");
-                    Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
-                    //LoggedWait(TimeBeforeAttackLands);
+                    Random random = new Random();
+                    var randomWait = random.Next(2500, 10000);
 
-                    data.Villages[i].IsAttacked = false;
-                }
+                    Debug.WriteLine($"Random wait to not get banned");
+                   LoggedWait(randomWait);
+
+                    while (!CheckIfEnoughTroops(troopAmount))
+                    {
+                        Debug.WriteLine($"Not enough troops in the village for attack");
+                        if (isBuying)
+                        {
+                            BuyTroops(BuyingLevel);
+                        }
+                        else
+                        {
+                            Debug.Write("Not buying troops");
+                        }
+                    }
+
+                    if (SendAttack(grid.X, grid.Y, troopAmount))
+                    {
+                        targets.Villages[i].IsAttacked = true;
+                        log.Info($"Attack in X: {grid.X} - Y: {grid.Y} will land in " + TimeBeforeAttackLands.ToString());
+
+                        Debug.WriteLine($"Attacking X: {grid.X} - Y: {grid.Y}.");
+                        Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                        //LoggedWait(TimeBeforeAttackLands);
+
+                        targets.Villages[i].IsAttacked = false;
+                    }
+                }                
             }
         }
 
@@ -338,7 +365,7 @@ namespace TravianBot
             }
             catch (Exception)
             {
-                Debug.WriteLine($"Not enough ressources for 1 unit :(");
+                Debug.WriteLine($"Not enough ressources for {amount.ToString()} unit :(");
             }
         }
 
@@ -437,7 +464,5 @@ namespace TravianBot
         }
 
         #endregion
-
-
     }
 }

@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace TravianBot.Functionnalities
+using Newtonsoft.Json;
+
+namespace TravianBot.Functionnalities.Data
 {
-    class Data
+    class AttackTargets
     {
         [JsonProperty("Oases")]
         public List<Oases> Oases { get; set; }
@@ -38,6 +39,9 @@ namespace TravianBot.Functionnalities
 
         [JsonProperty("Y")]
         public int Y { get; set; }
+
+        [JsonProperty("CanRaid")]
+        public bool CanRaid { get; set; }
 
         public bool IsAttacked { get; set; }
     }

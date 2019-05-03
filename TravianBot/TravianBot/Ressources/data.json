@@ -131,97 +131,115 @@
       "Id": 1,
       "X": -32,
       "Y": -50,
-      "isInactive": "yes"
+      "CanRaid": "true"
     },
     {
       "Id": 2,
       "X": -32,
-      "Y": -54,
-      "isInactive": "no"
+      "Y": -52,
+      "CanRaid": "false"
     },
     {
       "Id": 3,
       "X": -35,
       "Y": -53,
-      "isInactive": "no"
+      "CanRaid": "true"
     },
     {
       "Id": 4,
-      "X": -30,
-      "Y": -56,
-      "isInactive": "yes"
+      "X": -31,
+      "Y": -46,
+      "CanRaid": "false"
     },
     {
       "Id": 5,
-      "X": -33,
-      "Y": -46,
-      "isInactive": "no"
+      "X": -30,
+      "Y": -56,
+      "CanRaid": "true"
     },
     {
       "Id": 6,
       "X": -26,
-      "Y": -48,
-      "isInactive": "yes"
+      "Y": -52,
+      "CanRaid": "false"
     },
     {
       "Id": 7,
-      "X": -36,
-      "Y": -54,
-      "isInactive": "no"
+      "X": -33,
+      "Y": -46,
+      "CanRaid": "true"
     },
     {
       "Id": 8,
-      "X": -37,
-      "Y": -50,
-      "isInactive": "no"
+      "X": -36,
+      "Y": -54,
+      "CanRaid": "true"
     },
     {
       "Id": 9,
       "X": -26,
-      "Y": -55,
-      "isInactive": "no"
+      "Y": -48,
+      "CanRaid": "true"
     },
     {
       "Id": 10,
-      "X": -28,
+      "X": -30,
       "Y": -45,
-      "isInactive": "yes"
+      "CanRaid": "false"
     },
     {
       "Id": 11,
-      "X": -32,
-      "Y": -58,
-      "isInactive": "no"
+      "X": -37,
+      "Y": -50,
+      "CanRaid": "true"
     },
     {
       "Id": 12,
-      "X": -25,
-      "Y": -46,
-      "isInactive": "yes"
+      "X": -33,
+      "Y": -57,
+      "CanRaid": "false"
     },
     {
       "Id": 13,
-      "X": -24,
+      "X": -26,
       "Y": -55,
-      "isInactive": "no"
+      "CanRaid": "true"
     },
     {
       "Id": 14,
-      "X": -21,
-      "Y": -52,
-      "isInactive": "no"
+      "X": -28,
+      "Y": -45,
+      "CanRaid": "true"
     },
     {
       "Id": 15,
-      "X": -21,
-      "Y": -47,
-      "isInactive": "yes"
+      "X": -32,
+      "Y": -58,
+      "CanRaid": "true"
     },
     {
       "Id": 16,
-      "X": -17,
-      "Y": -49,
-      "isInactive": "no"
+      "X": -35,
+      "Y": -45,
+      "CanRaid": "false"
+    },
+    {
+      "Id": 17,
+      "X": -25,
+      "Y": -46,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 18,
+      "X": -24,
+      "Y": -55,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 19,
+      "X": -23,
+      "Y": -53,
+      "CanRaid": "false"
     }
   ]
 }

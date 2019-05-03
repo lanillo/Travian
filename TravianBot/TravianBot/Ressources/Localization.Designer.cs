@@ -115,6 +115,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to build.php?id=31.
+        /// </summary>
+        internal static string url_barracks {
+            get {
+                return ResourceManager.GetString("url_barracks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to dorf2.php.
         /// </summary>
         internal static string url_building {
@@ -183,6 +192,15 @@ namespace TravianBot.Ressources {
         internal static string XPath_buyAllLegionnaire {
             get {
                 return ResourceManager.GetString("XPath_buyAllLegionnaire", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;nonFavouriteTroops&quot;]/div[1]/div/div[2]/div[4]/input.
+        /// </summary>
+        internal static string XPath_buyXLegionnaire {
+            get {
+                return ResourceManager.GetString("XPath_buyXLegionnaire", resourceCulture);
             }
         }
         
@@ -264,6 +282,15 @@ namespace TravianBot.Ressources {
         internal static string XPath_train_troops {
             get {
                 return ResourceManager.GetString("XPath_train_troops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&apos;troops&apos;]/tbody/tr[1].
+        /// </summary>
+        internal static string XPath_troops_row_one {
+            get {
+                return ResourceManager.GetString("XPath_troops_row_one", resourceCulture);
             }
         }
         

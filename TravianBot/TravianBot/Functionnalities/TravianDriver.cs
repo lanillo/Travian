@@ -33,7 +33,7 @@ namespace TravianBot
 
         public Functionalities()
         {
-            data = Utilities.GetDataJson(Constants.dataJson);
+            data = Utilities.GetDataJson(System.IO.Path.GetFullPath(@"..\..\Ressources\data.json"));
         }
 
         [AssemblyInitialize]
@@ -42,7 +42,7 @@ namespace TravianBot
             username = Environment.GetEnvironmentVariable("LOGIN_USERNAME");
             password = Environment.GetEnvironmentVariable("LOGIN_PASSWORD");
 
-            chromeDriver = new ChromeDriver(@"E:\Projects\SeleniumBots\TravianBot\TravianBot\SeleniumDriver\chromedriver_win32");
+            chromeDriver = new ChromeDriver(System.IO.Path.GetFullPath(@"..\..\SeleniumDriver\chromedriver_win32"));
             chromeDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
             chromeDriver.Manage().Window.Maximize();
         }
@@ -63,7 +63,7 @@ namespace TravianBot
                 oasisToAttack.Add(i);
             }
 
-            int waitForAttack = 11854000;
+            int waitForAttack = 0;
             Debug.WriteLine($"Waiting for attack to land");
             Debug.WriteLine($"{DateTime.Now} - Attack will land in {waitForAttack.ToString()}");
             LoggedWait(waitForAttack);           
@@ -74,8 +74,8 @@ namespace TravianBot
 
             while (true)
             {
-                SendAttackToVillages(villagesToAttack, RaidNormalAmount, BuyStuff);
-                SendAttackToOasis(oasisToAttack, RaidNormalAmount, BuyStuff);
+                SendAttackToVillages(villagesToAttack, RaidNormalAmount, false);
+                //SendAttackToOasis(oasisToAttack, RaidNormalAmount, BuyStuff);
             }            
         }
 
@@ -85,13 +85,13 @@ namespace TravianBot
         {
             NavigateTo(Constants.travianUrl);
             FillCredentialsAndEnter();
-            log.Info("Logged in");
+            Debug.WriteLine("Logged in");
         }
 
         public void NavigateTo(string url)
         {            
             chromeDriver.Navigate().GoToUrl(url);
-            log.Info("Navigate to " + url);
+            Debug.WriteLine("Navigate to " + url);
         }
 
         public void FillCredentialsAndEnter()
@@ -99,7 +99,7 @@ namespace TravianBot
             chromeDriver.FindElement(By.Name(Localization.login_username)).SendKeys(username);
             chromeDriver.FindElement(By.Name(Localization.login_password)).SendKeys(password);
             chromeDriver.FindElement(By.Name(Localization.login_password)).SendKeys(Keys.Enter);
-            log.Info("Connected as " + username);
+            Debug.WriteLine("Connected as " + username);
         }
 
         public void OpenTab(Tabs tab)
@@ -108,7 +108,7 @@ namespace TravianBot
             url = GetTabUrl(tab);
 
             NavigateTo(url);
-            log.Info("Clicked on tab " + tab.ToString());
+            Debug.WriteLine("Clicked on tab " + tab.ToString());
         }
 
         public string GetTabUrl(Tabs tab)
@@ -147,10 +147,10 @@ namespace TravianBot
             currentIron = Int32.Parse(iron.Replace(",", ""));
             currentWheat = Int32.Parse(wheat.Replace(",", ""));
 
-            log.Info($"wood: {wood}");
-            log.Info($"clay: {clay}");
-            log.Info($"iron: {iron}");
-            log.Info($"wheat: {wheat}");
+            Debug.WriteLine($"wood: {wood}");
+            Debug.WriteLine($"clay: {clay}");
+            Debug.WriteLine($"iron: {iron}");
+            Debug.WriteLine($"wheat: {wheat}");
         }
 
         private bool CheckForTroopsInOasis(int x, int y)
@@ -166,39 +166,50 @@ namespace TravianBot
 
             if (troops.Text == "none")
             {
+                Debug.WriteLine("Oasis empty");
                 return true;
             }
             else
             {
+                Debug.WriteLine("Oasis has some troops");
                 return false;
             }
         }
 
-        public bool CheckIfEnoughTroops(int minimumAmount)
+        public bool CheckIfEnoughTroops(int minimumAmount = 5)
         {
+            Random random = new Random();
+            LoggedWait(random.Next(10000, 60000), "Waiting before checking for troops");
+
             var legionnaireAmountText = "";
-            int legionnaireAmount = 0;
+
+            OpenTab(Tabs.Ressources);
 
             try
             {
-                legionnaireAmountText = chromeDriver.FindElement(By.XPath(Localization.XPath_legionnaireAmount)).Text;
+                legionnaireAmountText = chromeDriver.FindElement(By.XPath(Localization.XPath_troops_row_one)).Text;
+                var splitted_text = legionnaireAmountText.Split(' ');
+
+                bool isLegionnaire = splitted_text[1] == "Legionnaires";
+                
+                bool isHigherThanMinimumAmount = int.Parse(splitted_text[0]) >= minimumAmount;
+                Debug.WriteLine($"We have this in first row {legionnaireAmountText}");
+                if (!isLegionnaire)
+                {
+                    return false;
+                }
+
+                if (isHigherThanMinimumAmount)
+                {
+                    return true;
+                }
             }
             catch (Exception)
             {
                 return false;                
             }
 
-            if (legionnaireAmount < minimumAmount)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-
-
-
+            return false;
         }
 
         #endregion
@@ -212,6 +223,12 @@ namespace TravianBot
                 for (int i = 0; i < oasisToAttack.Count; i++)
                 {
                     var grid = data.Oases[i];
+
+                    Random random = new Random();
+                    var randomWait = random.Next(2500, 20000);
+
+                    Debug.WriteLine($"Random wait to not get banned");
+                    LoggedWait(randomWait);
 
                     while (!CheckIfEnoughTroops(troopAmount))
                     {
@@ -246,12 +263,26 @@ namespace TravianBot
             {
                 var grid = data.Villages[number[i]];
 
+                Debug.WriteLine($"----- Attacking village # {i.ToString()} -----");
+                Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
+                Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
+
+                Random random = new Random();
+                var randomWait = random.Next(2500, 10000);
+
+                Debug.WriteLine($"Random wait to not get banned");
+                LoggedWait(randomWait);
+
                 while (!CheckIfEnoughTroops(troopAmount))
                 {
-                    Debug.WriteLine($"No enough troops in the village for attack");
+                    Debug.WriteLine($"Not enough troops in the village for attack");
                     if (isBuying)
                     {
                         BuyTroops();
+                    }
+                    else
+                    {
+                        Debug.Write("Not buying troops");
                     }
                 }
 
@@ -262,24 +293,25 @@ namespace TravianBot
 
                     Debug.WriteLine($"Attacking X: {grid.X} - Y: {grid.Y}.");
                     Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                    //LoggedWait(TimeBeforeAttackLands);
 
-                    LoggedWait(TimeBeforeAttackLands);
                     data.Villages[i].IsAttacked = false;
                 }
             }
         }
 
-        private void BuyTroops()
+        private void BuyTroops(int amount = 1)
         {
             RefreshRessources();
 
-            if (currentWood < 120 || currentWheat < 30 || currentIron < 150 || currentClay < 100)
+            if (currentWood < 120 * amount || 
+                currentWheat < 30 * amount || 
+                currentIron < 150 * amount || 
+                currentClay < 100 * amount)
             {
-                Debug.WriteLine($"Not enough ressources for 1 unit :(");
-
                 Random random = new Random();
                 var waitTime = random.Next(10000, 20000);
-                Debug.WriteLine($"Not enough ressources for 1 unit, waiting for {waitTime/1000} secs.");
+                Debug.WriteLine($"Not enough ressources for {amount} unit, waiting for {waitTime/1000} secs.");
                 Wait(waitTime);
                 return;
             }
@@ -287,12 +319,22 @@ namespace TravianBot
             try
             {
                 Debug.WriteLine($"Trying to build units");
-                var buyAllLegionnaireBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_buyAllLegionnaire));
-                buyAllLegionnaireBtn.Click();
 
-                Wait(1000);
+                Random random = new Random();
+                var waitTime = random.Next(1000, 2500);
+
+                var url = Constants.travianUrl + Localization.url_barracks;
+                NavigateTo(url);
+                Wait(waitTime);
+
+                var buyXLegionnaireInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXLegionnaire));
+                buyXLegionnaireInput.SendKeys(amount.ToString());
+                Wait(waitTime);
+
                 var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
                 trainBtn.Click();
+
+                Debug.WriteLine($"Buying {buyXLegionnaireInput.ToString()}");
             }
             catch (Exception)
             {
@@ -317,18 +359,20 @@ namespace TravianBot
             {
                 var inputHero = chromeDriver.FindElement(By.XPath(Localization.XPath_hero));
                 inputHero.SendKeys(1.ToString());
+                Debug.WriteLine("Hero was sent");
             }
 
             if (allTroops)
             {
                 var allLegionnaires = chromeDriver.FindElement(By.XPath(Localization.XPath_all_legionnaires));
                 allLegionnaires.Click();
+                Debug.WriteLine("All legionnaires were send");
             }
             else
             {
                 inputLegionnaire.SendKeys(troops.ToString());
+                Debug.WriteLine($"Sent {troops.ToString()} legionnaires");
             }
-
 
             inputXCoord.SendKeys(x.ToString());
             inputYCoord.SendKeys(y.ToString());
@@ -372,16 +416,16 @@ namespace TravianBot
             System.Threading.Thread.Sleep(ms);
         }
 
-        public void LoggedWait(int ms)
+        public void LoggedWait(int ms, string reason = "Attack will land in")
         {
-            int numberOfLogs = 100;
+            int numberOfLogs = 10;
             int partialWait = (int) Math.Ceiling((double) (ms / numberOfLogs));
 
             for (int i = 0; i < numberOfLogs; i++)
             {
                 System.Threading.Thread.Sleep(partialWait);
                 ms = ms - partialWait;
-                Debug.WriteLine($"{DateTime.Now} - Attack will land in {ms.ToString()}");
+                Debug.WriteLine($"{DateTime.Now} - {reason} {ms.ToString()}");
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -24,6 +25,13 @@ namespace TravianBot.Functionnalities.Utilities
         static public string ReadFile(string path)
         {            
             return File.ReadAllText(path, Encoding.Default);
+        }
+
+        static public int TimeToMs(string time)
+        {
+            string[] times = time.Replace("in ", "").Replace(" hrs.", "").Split(':');
+
+            return (Int32.Parse(times[0]) * 60 * 60 + Int32.Parse(times[1]) * 60 + Int32.Parse(times[2])) * 1000;
         }
     }
 }

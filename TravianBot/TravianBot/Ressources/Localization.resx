@@ -204,4 +204,16 @@
   <data name="XPath_troops_row_two" xml:space="preserve">
     <value>//*[@id="troops"]/tbody/tr[2]</value>
   </data>
+  <data name="XPath_troops_rows" xml:space="preserve">
+    <value>//*[@id="troops"]/tbody/tr</value>
+  </data>
+  <data name="url_stables" xml:space="preserve">
+    <value>build.php?id=23</value>
+  </data>
+  <data name="XPath_buyXEquitesImperatoris" xml:space="preserve">
+    <value>//*[@id="nonFavouriteTroops"]/div[5]/div/div[2]/div[4]/input</value>
+  </data>
+  <data name="XPath_EquitesImperatoris" xml:space="preserve">
+    <value>//*[@id="troops"]/tbody/tr[2]/td[2]/input</value>
+  </data>
 </root>

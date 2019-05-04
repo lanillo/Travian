@@ -141,105 +141,189 @@
     },
     {
       "Id": 3,
+      "X": -30,
+      "Y": -54,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 4,
+      "X": -32,
+      "Y": -54,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 5,
       "X": -35,
       "Y": -53,
       "CanRaid": "true"
     },
     {
-      "Id": 4,
+      "Id": 6,
       "X": -31,
       "Y": -46,
       "CanRaid": "false"
     },
     {
-      "Id": 5,
+      "Id": 7,
       "X": -30,
       "Y": -56,
       "CanRaid": "true"
     },
     {
-      "Id": 6,
+      "Id": 8,
       "X": -26,
       "Y": -52,
       "CanRaid": "false"
     },
     {
-      "Id": 7,
+      "Id": 9,
       "X": -33,
       "Y": -46,
       "CanRaid": "true"
     },
     {
-      "Id": 8,
+      "Id": 10,
       "X": -36,
       "Y": -54,
       "CanRaid": "true"
     },
     {
-      "Id": 9,
+      "Id": 11,
       "X": -26,
       "Y": -48,
       "CanRaid": "true"
     },
     {
-      "Id": 10,
+      "Id": 12,
       "X": -30,
       "Y": -45,
       "CanRaid": "false"
     },
     {
-      "Id": 11,
+      "Id": 13,
       "X": -37,
       "Y": -50,
       "CanRaid": "true"
     },
     {
-      "Id": 12,
+      "Id": 14,
       "X": -33,
       "Y": -57,
       "CanRaid": "false"
     },
     {
-      "Id": 13,
+      "Id": 15,
       "X": -26,
       "Y": -55,
       "CanRaid": "true"
     },
     {
-      "Id": 14,
+      "Id": 16,
       "X": -28,
       "Y": -45,
       "CanRaid": "true"
     },
     {
-      "Id": 15,
+      "Id": 17,
       "X": -32,
       "Y": -58,
       "CanRaid": "true"
     },
     {
-      "Id": 16,
+      "Id": 18,
       "X": -35,
       "Y": -45,
       "CanRaid": "false"
     },
     {
-      "Id": 17,
+      "Id": 19,
       "X": -25,
       "Y": -46,
       "CanRaid": "true"
     },
     {
-      "Id": 18,
+      "Id": 20,
       "X": -24,
       "Y": -55,
       "CanRaid": "true"
     },
     {
-      "Id": 19,
+      "Id": 21,
       "X": -23,
       "Y": -53,
       "CanRaid": "false"
+    },
+    {
+      "Id": 22,
+      "X": -28,
+      "Y": -59,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 23,
+      "X": -26,
+      "Y": -58,
+      "CanRaid": "false"
+    },
+    {
+      "Id": 24,
+      "X": -27,
+      "Y": -43,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 25,
+      "X": -39,
+      "Y": -56,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 26,
+      "X": -28,
+      "Y": -42,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 27,
+      "X": -32,
+      "Y": -61,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 28,
+      "X": -41,
+      "Y": -52,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 29,
+      "X": -21,
+      "Y": -47,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 30,
+      "X": -39,
+      "Y": -41,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 31,
+      "X": -43,
+      "Y": -46,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 32,
+      "X": -38,
+      "Y": -40,
+      "CanRaid": "true"
+    },
+    {
+      "Id": 33,
+      "X": -37,
+      "Y": -39,
+      "CanRaid": "true"
     }
   ]
 }

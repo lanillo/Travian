@@ -29,9 +29,7 @@ namespace TravianBot
         static string username;
         static string password;
 
-        static readonly int RaidNormalAmount = 5;
-        static readonly bool BuyStuff = true;
-        static readonly int BuyingLevel = 20;
+        static readonly bool CanBuyTroops = true;
 
         static AttackTargets targets;
         static int TimeBeforeAttackLands;
@@ -57,7 +55,14 @@ namespace TravianBot
         {
             List<int> villagesToAttack = new List<int>();
             List<int> oasisToAttack = new List<int>();
-            
+
+            TroopsInfo troopsToBuy = new TroopsInfo();
+            troopsToBuy.EquitesImperatoris.Amount = 2;
+
+            TroopsInfo troopsToSend = new TroopsInfo();
+            troopsToSend.Legionnaire.Amount = 5;
+            troopsToSend.EquitesImperatoris.Amount = 2;            
+
             for (int i = 0; i < targets.Villages.Count; i++)
             {
                 villagesToAttack.Add(i);
@@ -71,7 +76,7 @@ namespace TravianBot
             int waitForAttack = 0;
             Debug.WriteLine($"Waiting for attack to land");
             Debug.WriteLine($"{DateTime.Now} - Attack will land in {waitForAttack.ToString()}");
-            LoggedWait(waitForAttack);           
+            LoggedWait(waitForAttack, "Waiting for last attack to land");           
             
             Login();
             OpenTab(Tabs.Building);
@@ -79,9 +84,77 @@ namespace TravianBot
 
             while (true)
             {
-                SendAttackToVillages(villagesToAttack, RaidNormalAmount, false);
-                //SendAttackToOasis(oasisToAttack, RaidNormalAmount, BuyStuff);
+                SendAttackToVillages(villagesToAttack, troopsToSend, troopsToBuy);
             }            
+        }
+
+        public void SendAttackToVillages(List<int> number, TroopsInfo attackInfo, TroopsInfo buyInfo)
+        {
+            for (int i = 0; i < number.Count; i++)
+            {
+                var grid = targets.Villages[number[i]];
+
+                if (!grid.CanRaid)
+                {
+                    Debug.WriteLine($"----- Village # {i.ToString()} cannot be attacked -----");
+                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
+                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
+                }
+                else
+                {
+                    Debug.WriteLine($"----- Attacking village # {i.ToString()} -----");
+                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
+                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
+
+                    Random random = new Random();
+                    var randomWait = random.Next(2500, 10000);
+
+                    LoggedWait(randomWait, "Waiting before attack to not get banned for");
+
+                    while (CheckIfEnoughTroops(attackInfo) == Messages.None)
+                    {
+                        Debug.WriteLine($"Not enough troops in the village for attack");
+
+                        if (CanBuyTroops)
+                        {
+                            Debug.WriteLine($"Buying Troops");
+                            BuyTroops(buyInfo);
+                        }
+                    }
+
+                    var result = CheckIfEnoughTroops(attackInfo);
+
+                    if (result == Messages.EquitesImperatoris)
+                    {
+                        SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris);
+                        
+                        targets.Villages[i].IsAttacked = true;
+
+                        Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
+                        Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                        Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.EquitesImperatoris.Amount} {attackInfo.EquitesImperatoris.Name}");
+                            
+
+                        targets.Villages[i].IsAttacked = false;                        
+                    }
+                    else if (result == Messages.Legionnaire || result == Messages.All)
+                    {
+                        SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
+
+                        targets.Villages[i].IsAttacked = true;
+
+                        Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
+                        Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                        Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.Legionnaire.Amount} {attackInfo.Legionnaire.Name}");
+
+                        targets.Villages[i].IsAttacked = false;                    
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Bug, it should not get here");
+                    }                    
+                }
+            }
         }
 
         # region Navigation
@@ -180,61 +253,70 @@ namespace TravianBot
                 return false;
             }
         }
-
-        public bool CheckIfEnoughTroops(int minimumAmount = 5)
+        
+        public Messages CheckIfEnoughTroops(TroopsInfo attackTroops)
         {
             Random random = new Random();
-            LoggedWait(random.Next(10000, 60000), "Waiting before checking for troops");
-
-            var legionnaireAmountText = "";
+            LoggedWait(random.Next(2000, 4000), "Waiting before checking for troops");
 
             OpenTab(Tabs.Ressources);
+            var TroopRows = chromeDriver.FindElements(By.XPath(Localization.XPath_troops_rows));
 
-            try
+            LoggedWait(random.Next(500, 2000), "Waiting for page to avoid stale element exception");
+
+            bool enoughLegionnaire = false;
+            bool enoughEquitesImperatoris = false;
+
+            foreach (var row in TroopRows)
             {
-                legionnaireAmountText = chromeDriver.FindElement(By.XPath(Localization.XPath_troops_row_one)).Text;
-                var splitted_text = legionnaireAmountText.Split(' ');
+                var textSplitted = row.Text.Split(' ');
+                var amount = int.Parse(textSplitted[0]);
 
-                bool isLegionnaire = splitted_text[1] == "Legionnaires";
-                bool isHero = splitted_text[1] == "Hero";
-                bool isHigherThanMinimumAmount = int.Parse(splitted_text[0]) >= minimumAmount;
+                if (textSplitted[1] == "Equites")
+                    textSplitted[1] = $"{textSplitted[1]} {textSplitted[2]}";
 
-                Debug.WriteLine($"We have this in first row: {legionnaireAmountText}");
-
-                if (isHero)
+                // If legionnaire
+                if (textSplitted[1].Contains(attackTroops.Legionnaire.Name))
                 {
-                    legionnaireAmountText = chromeDriver.FindElement(By.XPath(Localization.XPath_troops_row_two)).Text;
-                    splitted_text = legionnaireAmountText.Split(' ');
-
-                    isLegionnaire = splitted_text[1] == "Legionnaires";
-                    isHigherThanMinimumAmount = int.Parse(splitted_text[0]) >= minimumAmount;
-
-                    Debug.WriteLine($"We have this in second row: {legionnaireAmountText}");
-                }
-                
-                if (!isLegionnaire)
-                {
-                    return false;
+                    if (amount >= attackTroops.Legionnaire.Amount)
+                    {
+                        enoughLegionnaire = true;
+                    }
                 }
 
-                if (isHigherThanMinimumAmount)
+                //If Equites Imperatoris
+                if (textSplitted[1].Contains(attackTroops.EquitesImperatoris.Name))
                 {
-                    return true;
+                    if (amount >= attackTroops.EquitesImperatoris.Amount)
+                    {
+                        enoughEquitesImperatoris = true;
+                    }
                 }
             }
-            catch (Exception)
-            {
-                return false;                
-            }
 
-            return false;
+            if (enoughEquitesImperatoris && enoughLegionnaire)
+            {
+                return Messages.All;
+            }
+            else if (enoughEquitesImperatoris)
+            {
+                return Messages.EquitesImperatoris;
+            }
+            else if (enoughLegionnaire)
+            {
+                return Messages.Legionnaire;
+            }
+            else
+            {
+                return Messages.None;
+            }
         }
 
         #endregion
 
         #region Attacks
 
-        public void SendAttackToOasis(List<int> oasisToAttack, int troopAmount, bool isBuying, bool mustBeEmpty = true)
+        /*public void SendAttackToOasis(List<int> oasisToAttack, int troopAmount, bool isBuying, bool mustBeEmpty = true)
         {
             if (mustBeEmpty)
             {
@@ -273,114 +355,97 @@ namespace TravianBot
                     }
                 }
             }
-        }
+        }*/
 
-        public void SendAttackToVillages(List<int> number, int troopAmount, bool isBuying)
-        {
-            for (int i = 0; i < number.Count; i++)
-            {
-                var grid = targets.Villages[number[i]];
-
-                if (!grid.CanRaid)
-                {
-                    Debug.WriteLine($"----- Village # {i.ToString()} cannot be attacked -----");
-                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
-                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
-                }
-                else
-                {
-                    Debug.WriteLine($"----- Attacking village # {i.ToString()} -----");
-                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
-                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
-
-                    Random random = new Random();
-                    var randomWait = random.Next(2500, 10000);
-
-                    Debug.WriteLine($"Random wait to not get banned");
-                   LoggedWait(randomWait);
-
-                    while (!CheckIfEnoughTroops(troopAmount))
-                    {
-                        Debug.WriteLine($"Not enough troops in the village for attack");
-                        if (isBuying)
-                        {
-                            BuyTroops(BuyingLevel);
-                        }
-                        else
-                        {
-                            Debug.Write("Not buying troops");
-                        }
-                    }
-
-                    if (SendAttack(grid.X, grid.Y, troopAmount))
-                    {
-                        targets.Villages[i].IsAttacked = true;
-                        log.Info($"Attack in X: {grid.X} - Y: {grid.Y} will land in " + TimeBeforeAttackLands.ToString());
-
-                        Debug.WriteLine($"Attacking X: {grid.X} - Y: {grid.Y}.");
-                        Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
-                        //LoggedWait(TimeBeforeAttackLands);
-
-                        targets.Villages[i].IsAttacked = false;
-                    }
-                }                
-            }
-        }
-
-        private void BuyTroops(int amount = 1)
+        private void BuyTroops(TroopsInfo buyInfo)
         {
             RefreshRessources();
 
-            if (currentWood < 120 * amount || 
-                currentWheat < 30 * amount || 
-                currentIron < 150 * amount || 
-                currentClay < 100 * amount)
+            bool CanBuyEquitesImperatoris = true;
+            bool CanBuyLegionnaire = true;
+
+            if (!EnoughRessources(buyInfo.EquitesImperatoris))
             {
-                Random random = new Random();
-                var waitTime = random.Next(10000, 20000);
-                Debug.WriteLine($"Not enough ressources for {amount} unit, waiting for {waitTime/1000} secs.");
-                Wait(waitTime);
-                return;
+                CanBuyEquitesImperatoris = false;
+                Debug.WriteLine($"Not enough ressources for {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
             }
-
-            try
+            else if (!EnoughRessources(buyInfo.Legionnaire))
             {
-                Debug.WriteLine($"Trying to build units");
-
-                Random random = new Random();
-                var waitTime = random.Next(1000, 2500);
-
-                var url = Constants.travianUrl + Localization.url_barracks;
-                NavigateTo(url);
-                Wait(waitTime);
-
-                var buyXLegionnaireInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXLegionnaire));
-                buyXLegionnaireInput.SendKeys(amount.ToString());
-                Wait(waitTime);
-
-                var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
-                trainBtn.Click();
-
-                Debug.WriteLine($"Buying {buyXLegionnaireInput.ToString()}");
+                CanBuyLegionnaire = false;
+                Debug.WriteLine($"Not enough ressources for {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
             }
-            catch (Exception)
+            else
             {
-                Debug.WriteLine($"Not enough ressources for {amount.ToString()} unit :(");
-            }
+                if (CanBuyEquitesImperatoris)
+                {
+                    Debug.WriteLine($"Buying {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
+
+                    Random random = new Random();
+                    var waitTime = random.Next(1000, 2500);
+
+                    var url = Constants.travianUrl + Localization.url_stables;
+                    NavigateTo(url);
+                    Wait(waitTime);
+
+                    var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXEquitesImperatoris));
+                    buyXInput.SendKeys(buyInfo.EquitesImperatoris.Amount.ToString());
+
+                    var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
+                    trainBtn.Click();
+
+                    Debug.WriteLine($"Bought {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
+                    Wait(waitTime);
+
+                    return;
+                }
+                else if (CanBuyLegionnaire)
+                {
+                    Debug.WriteLine($"Buying {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
+
+                    Random random = new Random();
+                    var waitTime = random.Next(1000, 2500);
+
+                    var url = Constants.travianUrl + Localization.url_barracks;
+                    NavigateTo(url);
+                    Wait(waitTime);
+
+                    var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXLegionnaire));
+                    buyXInput.SendKeys(buyInfo.Legionnaire.Amount.ToString());
+
+                    var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
+                    trainBtn.Click();
+
+                    Debug.WriteLine($"Bought {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
+                    Wait(waitTime);
+
+                    return;
+                }
+                else
+                {
+                    Random random = new Random();
+                    var waitTime = random.Next(2500, 15000);
+                    Debug.WriteLine($"waiting for {waitTime / 1000} secs.");
+                    Wait(waitTime);
+                    return;
+                }
+            }       
         }
 
-        public bool SendAttack(int x, int y, int troops, bool sendHero = false, bool allTroops = false)
+        public void SendAttack(int x, int y, Unit troops, bool sendHero = false)
         {
             var rallyPointUrl = Constants.travianUrl + Localization.url_rallyPoint_sendTroops;
             NavigateTo(rallyPointUrl);
+
+            Random random = new Random();
+            LoggedWait(random.Next(1000, 2500), "Waiting For Barracks for no ban");
 
             var inputXCoord = chromeDriver.FindElement(By.XPath(Localization.XPath_x_coord));
             var inputYCoord = chromeDriver.FindElement(By.XPath(Localization.XPath_y_coord));
             var rboRaid = chromeDriver.FindElement(By.XPath(Localization.XPath_raid));
             var buttonSend = chromeDriver.FindElement(By.XPath(Localization.XPath_OkBtn));
 
-            //TODO: add troop class to choose soldiers
             var inputLegionnaire = chromeDriver.FindElement(By.XPath(Localization.XPath_legionnaire));
+            var inputEquitesImperatoris = chromeDriver.FindElement(By.XPath(Localization.XPath_EquitesImperatoris));
 
             if (sendHero)
             {
@@ -389,54 +454,51 @@ namespace TravianBot
                 Debug.WriteLine("Hero was sent");
             }
 
-            if (allTroops)
+            TroopsInfo troopsInfo = new TroopsInfo();
+
+            if (troops.Name == troopsInfo.Legionnaire.Name)
             {
-                var allLegionnaires = chromeDriver.FindElement(By.XPath(Localization.XPath_all_legionnaires));
-                allLegionnaires.Click();
-                Debug.WriteLine("All legionnaires were send");
+                inputLegionnaire.SendKeys(troops.Amount.ToString());
             }
-            else
+            else if (troops.Name == troopsInfo.EquitesImperatoris.Name)
             {
-                inputLegionnaire.SendKeys(troops.ToString());
-                Debug.WriteLine($"Sent {troops.ToString()} legionnaires");
+                inputEquitesImperatoris.SendKeys(troops.Amount.ToString());
             }
+
+            Debug.WriteLine($"{troops.Amount} {troops.Name} were sent.");
+
+            LoggedWait(random.Next(500, 1200), "Activating Raid");
 
             inputXCoord.SendKeys(x.ToString());
             inputYCoord.SendKeys(y.ToString());
             rboRaid.Click();
 
+            LoggedWait(random.Next(500, 1200), "Clicking attack");
+
             buttonSend.Click();
 
             Wait(1000);
 
-            try
-            {
-                var errorMessage = chromeDriver.FindElement(By.XPath(Localization.XPath_error_sending_troops));
+            var buttonConfirm = chromeDriver.FindElement(By.XPath(Localization.XPath_ConfirmBtn));
+            var arrivalTime = chromeDriver.FindElement(By.XPath(Localization.XPath_arrival_time));
 
-                if (errorMessage.Text == "No troops have been selected.")
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-                var buttonConfirm = chromeDriver.FindElement(By.XPath(Localization.XPath_ConfirmBtn));
-                var arrivalTime = chromeDriver.FindElement(By.XPath(Localization.XPath_arrival_time));
+            var time = arrivalTime.Text;
+            TimeBeforeAttackLands = Utilities.TimeToMs(time) * 2;
 
-                var time = arrivalTime.Text;
-                TimeBeforeAttackLands = TimeToMs(time) * 2;
-
-                buttonConfirm.Click();
-
-                return true;
-            }
-
-            return false;
+            buttonConfirm.Click();
         }
 
         #endregion
 
         #region Utilities
+
+        public bool EnoughRessources(Unit unit)
+        {
+            return (currentWood > unit.Amount * unit.Cost.Wood &&
+                    currentWheat > unit.Amount * unit.Cost.Wheat &&
+                    currentIron > unit.Amount * unit.Cost.Iron &&
+                    currentClay > unit.Amount * unit.Cost.Clay);
+        }
 
         public void Wait(int ms)
         {
@@ -454,14 +516,7 @@ namespace TravianBot
                 ms = ms - partialWait;
                 Debug.WriteLine($"{DateTime.Now} - {reason} {ms.ToString()}");
             }
-        }
-
-        public int TimeToMs(string time)
-        {            
-            string[] times = time.Replace("in ", "").Replace(" hrs.", "").Split(':');
-
-            return (Int32.Parse(times[0]) * 60 * 60  + Int32.Parse(times[1]) * 60 + Int32.Parse(times[2])) * 1000;
-        }
+        }     
 
         #endregion
     }

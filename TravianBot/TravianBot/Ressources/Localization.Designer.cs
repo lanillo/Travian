@@ -169,6 +169,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to build.php?id=23.
+        /// </summary>
+        internal static string url_stables {
+            get {
+                return ResourceManager.GetString("url_stables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //*[@id=&quot;troops&quot;]/tbody/tr[1]/td[1]/a.
         /// </summary>
         internal static string XPath_all_legionnaires {
@@ -196,6 +205,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;nonFavouriteTroops&quot;]/div[5]/div/div[2]/div[4]/input.
+        /// </summary>
+        internal static string XPath_buyXEquitesImperatoris {
+            get {
+                return ResourceManager.GetString("XPath_buyXEquitesImperatoris", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //*[@id=&quot;nonFavouriteTroops&quot;]/div[1]/div/div[2]/div[4]/input.
         /// </summary>
         internal static string XPath_buyXLegionnaire {
@@ -210,6 +228,15 @@ namespace TravianBot.Ressources {
         internal static string XPath_ConfirmBtn {
             get {
                 return ResourceManager.GetString("XPath_ConfirmBtn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;troops&quot;]/tbody/tr[2]/td[2]/input.
+        /// </summary>
+        internal static string XPath_EquitesImperatoris {
+            get {
+                return ResourceManager.GetString("XPath_EquitesImperatoris", resourceCulture);
             }
         }
         
@@ -300,6 +327,15 @@ namespace TravianBot.Ressources {
         internal static string XPath_troops_row_two {
             get {
                 return ResourceManager.GetString("XPath_troops_row_two", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;troops&quot;]/tbody/tr.
+        /// </summary>
+        internal static string XPath_troops_rows {
+            get {
+                return ResourceManager.GetString("XPath_troops_rows", resourceCulture);
             }
         }
         

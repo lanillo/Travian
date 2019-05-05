@@ -29,7 +29,7 @@ namespace TravianBot
         static string username;
         static string password;
 
-        static readonly bool CanBuyTroops = true;
+        static readonly bool CanBuyTroops = false;
 
         static AttackTargets targets;
         static int TimeBeforeAttackLands;
@@ -57,7 +57,7 @@ namespace TravianBot
             List<int> oasisToAttack = new List<int>();
 
             TroopsInfo troopsToBuy = new TroopsInfo();
-            troopsToBuy.EquitesImperatoris.Amount = 2;
+            troopsToBuy.EquitesImperatoris.Amount = 3;
 
             TroopsInfo troopsToSend = new TroopsInfo();
             troopsToSend.Legionnaire.Amount = 5;
@@ -92,68 +92,76 @@ namespace TravianBot
         {
             for (int i = 0; i < number.Count; i++)
             {
-                var grid = targets.Villages[number[i]];
-
-                if (!grid.CanRaid)
+                try
                 {
-                    Debug.WriteLine($"----- Village # {i.ToString()} cannot be attacked -----");
-                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
-                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
-                }
-                else
-                {
-                    Debug.WriteLine($"----- Attacking village # {i.ToString()} -----");
-                    Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
-                    Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
+                    var grid = targets.Villages[number[i]];
 
-                    Random random = new Random();
-                    var randomWait = random.Next(2500, 10000);
-
-                    LoggedWait(randomWait, "Waiting before attack to not get banned for");
-
-                    while (CheckIfEnoughTroops(attackInfo) == Messages.None)
+                    if (!grid.CanRaid)
                     {
-                        Debug.WriteLine($"Not enough troops in the village for attack");
-
-                        if (CanBuyTroops)
-                        {
-                            Debug.WriteLine($"Buying Troops");
-                            BuyTroops(buyInfo);
-                        }
-                    }
-
-                    var result = CheckIfEnoughTroops(attackInfo);
-
-                    if (result == Messages.EquitesImperatoris)
-                    {
-                        SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris);
-                        
-                        targets.Villages[i].IsAttacked = true;
-
-                        Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
-                        Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
-                        Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.EquitesImperatoris.Amount} {attackInfo.EquitesImperatoris.Name}");
-                            
-
-                        targets.Villages[i].IsAttacked = false;                        
-                    }
-                    else if (result == Messages.Legionnaire || result == Messages.All)
-                    {
-                        SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
-
-                        targets.Villages[i].IsAttacked = true;
-
-                        Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
-                        Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
-                        Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.Legionnaire.Amount} {attackInfo.Legionnaire.Name}");
-
-                        targets.Villages[i].IsAttacked = false;                    
+                        Debug.WriteLine($"----- Village # {i.ToString()} cannot be attacked -----");
+                        Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
+                        Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
                     }
                     else
                     {
-                        Debug.WriteLine("Bug, it should not get here");
-                    }                    
+                        Debug.WriteLine($"----- Attacking village # {i.ToString()} -----");
+                        Debug.WriteLine($"----- X: {grid.X.ToString()} -----");
+                        Debug.WriteLine($"----- Y: {grid.Y.ToString()} -----");
+
+                        Random random = new Random();
+                        var randomWait = random.Next(2500, 10000);
+
+                        LoggedWait(randomWait, "Waiting before attack to not get banned for");
+
+                        while (CheckIfEnoughTroops(attackInfo) == Messages.None)
+                        {
+                            Debug.WriteLine($"Not enough troops in the village for attack");
+
+                            if (CanBuyTroops)
+                            {
+                                Debug.WriteLine($"Buying Troops");
+                                BuyTroops(buyInfo);
+                            }
+                        }
+
+                        var result = CheckIfEnoughTroops(attackInfo);
+
+                        if (result == Messages.EquitesImperatoris)
+                        {
+                            SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris);
+
+                            targets.Villages[i].IsAttacked = true;
+
+                            Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
+                            Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                            Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.EquitesImperatoris.Amount} {attackInfo.EquitesImperatoris.Name}");
+
+
+                            targets.Villages[i].IsAttacked = false;
+                        }
+                        else if (result == Messages.Legionnaire || result == Messages.All)
+                        {
+                            SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
+
+                            targets.Villages[i].IsAttacked = true;
+
+                            Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
+                            Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                            Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.Legionnaire.Amount} {attackInfo.Legionnaire.Name}");
+
+                            targets.Villages[i].IsAttacked = false;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Bug, it should not get here");
+                        }
+                    }
                 }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"Exception, {e.Message}");
+                    i--;
+                }                
             }
         }
 

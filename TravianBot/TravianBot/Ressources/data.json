@@ -251,7 +251,7 @@
       "Id": 21,
       "X": -39,
       "Y": -56,
-      "CanRaid": "true"
+      "CanRaid": "false"
     },
     {
       "Id": 22,
@@ -395,13 +395,13 @@
       "Id": 45,
       "X": -33,
       "Y": -37,
-      "CanRaid": "true"
+      "CanRaid": "false"
     },
     {
       "Id": 46,
       "X": -21,
       "Y": -40,
-      "CanRaid": "true"
+      "CanRaid": "false"
     },
     {
       "Id": 47,

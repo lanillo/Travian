@@ -26,10 +26,13 @@ namespace TravianBot
         static int currentIron = 0;
         static int currentWheat = 0;
 
+        static int NumberOfTries = 0;
+        static int MaxNumberOfTries = 3;
+
         static string username;
         static string password;
 
-        static readonly bool CanBuyTroops = false;
+        static bool CanBuyTroops = false;
 
         static AttackTargets targets;
         static int TimeBeforeAttackLands;
@@ -56,8 +59,10 @@ namespace TravianBot
             List<int> villagesToAttack = new List<int>();
             List<int> oasisToAttack = new List<int>();
 
+            CanBuyTroops = false;
+
             TroopsInfo troopsToBuy = new TroopsInfo();
-            troopsToBuy.EquitesImperatoris.Amount = 3;
+            troopsToBuy.EquitesImperatoris.Amount = 6;
 
             TroopsInfo troopsToSend = new TroopsInfo();
             troopsToSend.Legionnaire.Amount = 5;
@@ -160,7 +165,16 @@ namespace TravianBot
                 catch (Exception e)
                 {
                     Debug.WriteLine($"Exception, {e.Message}");
-                    i--;
+
+                    if (NumberOfTries <= MaxNumberOfTries)
+                    {
+                        i--;
+                        NumberOfTries++;
+                    }
+                    else
+                    {
+                        NumberOfTries = 0;
+                    }
                 }                
             }
         }

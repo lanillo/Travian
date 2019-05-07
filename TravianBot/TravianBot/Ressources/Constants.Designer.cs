@@ -70,6 +70,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no village at these coordinates..
+        /// </summary>
+        internal static string noVillageMsg {
+            get {
+                return ResourceManager.GetString("noVillageMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to E:\Projects\SeleniumBots\TravianBot\TravianBot\Ressources\Oasis.txt.
         /// </summary>
         internal static string oasisPath {

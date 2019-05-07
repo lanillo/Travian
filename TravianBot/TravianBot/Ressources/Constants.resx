@@ -120,6 +120,9 @@
   <data name="dataJson" xml:space="preserve">
     <value>E:\Projects\SeleniumBots\TravianBot\TravianBot\Ressources\data.json</value>
   </data>
+  <data name="noVillageMsg" xml:space="preserve">
+    <value>There is no village at these coordinates.</value>
+  </data>
   <data name="oasisPath" xml:space="preserve">
     <value>E:\Projects\SeleniumBots\TravianBot\TravianBot\Ressources\Oasis.txt</value>
   </data>

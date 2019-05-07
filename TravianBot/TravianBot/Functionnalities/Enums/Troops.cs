@@ -11,6 +11,7 @@ namespace TravianBot.Functionnalities.Enums
         Legionnaire,
         Praetorian,
         EquitesLegati,
-        EquitesImperatoris
+        EquitesImperatoris,
+        Settler
     }
 }

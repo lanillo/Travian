@@ -216,4 +216,19 @@
   <data name="XPath_EquitesImperatoris" xml:space="preserve">
     <value>//*[@id="troops"]/tbody/tr[2]/td[2]/input</value>
   </data>
+  <data name="XPath_noVillage_msg" xml:space="preserve">
+    <value>//*[@id="build"]/div[2]/p</value>
+  </data>
+  <data name="XPath_IncomingTroops_span" xml:space="preserve">
+    <value>//*[@id="movements"]/tbody/tr[2]/td[2]/div[1]/span</value>
+  </data>
+  <data name="Xpath_IncomingTroops_time" xml:space="preserve">
+    <value>//*[@id="movements"]/tbody/tr[2]/td[2]/div[2]/span</value>
+  </data>
+  <data name="XPath_Praetorian" xml:space="preserve">
+    <value>//*[@id="troops"]/tbody/tr[2]/td[1]/input</value>
+  </data>
+  <data name="XPath_Settlers" xml:space="preserve">
+    <value>//*[@id="troops"]/tbody/tr[2]/td[4]/input</value>
+  </data>
 </root>

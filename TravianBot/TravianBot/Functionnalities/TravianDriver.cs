@@ -27,7 +27,7 @@ namespace TravianBot
         static int currentWheat = 0;
 
         static int NumberOfTries = 0;
-        static int MaxNumberOfTries = 3;
+        static readonly int MaxNumberOfTries = 3;
 
         static string username;
         static string password;
@@ -37,9 +37,13 @@ namespace TravianBot
         static AttackTargets targets;
         static int TimeBeforeAttackLands;
 
+        static TroopsInfo TroopsToSave = new TroopsInfo();
+
         public Functionalities()
         {
             targets = Utilities.GetDataJson(System.IO.Path.GetFullPath(@"..\..\Ressources\data.json"));
+            TroopsToSave.Praetorian.Amount = 11;
+            TroopsToSave.Settlers.Amount = 3;
         }
 
         [AssemblyInitialize]
@@ -66,7 +70,8 @@ namespace TravianBot
 
             TroopsInfo troopsToSend = new TroopsInfo();
             troopsToSend.Legionnaire.Amount = 5;
-            troopsToSend.EquitesImperatoris.Amount = 2;            
+            troopsToSend.EquitesImperatoris.Amount = 2;
+            
 
             for (int i = 0; i < targets.Villages.Count; i++)
             {
@@ -84,11 +89,11 @@ namespace TravianBot
             LoggedWait(waitForAttack, "Waiting for last attack to land");           
             
             Login();
-            OpenTab(Tabs.Building);
+            OpenTab(Tabs.Ressources);
             RefreshRessources();
 
             while (true)
-            {
+            {                
                 SendAttackToVillages(villagesToAttack, troopsToSend, troopsToBuy);
             }            
         }
@@ -97,6 +102,8 @@ namespace TravianBot
         {
             for (int i = 0; i < number.Count; i++)
             {
+                AvoidAttack(TroopsToSave);
+
                 try
                 {
                     var grid = targets.Villages[number[i]];
@@ -127,6 +134,9 @@ namespace TravianBot
                                 Debug.WriteLine($"Buying Troops");
                                 BuyTroops(buyInfo);
                             }
+
+                            Debug.WriteLine($"Checking if we are attacked");
+                            AvoidAttack(TroopsToSave);
                         }
 
                         var result = CheckIfEnoughTroops(attackInfo);
@@ -207,7 +217,11 @@ namespace TravianBot
             string url;
             url = GetTabUrl(tab);
 
-            NavigateTo(url);
+            if (url != chromeDriver.Url)
+            {
+                NavigateTo(url);
+            }
+
             Debug.WriteLine("Clicked on tab " + tab.ToString());
         }
 
@@ -501,6 +515,114 @@ namespace TravianBot
 
             Wait(1000);
 
+            try
+            {
+                var noVillageMsg = chromeDriver.FindElement(By.XPath(Localization.XPath_noVillage_msg)).Text;
+
+                if (noVillageMsg.Contains(Constants.noVillageMsg))
+                {
+                    Debug.WriteLine("There is no village at these coordinates");
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("Confirming attack");
+            }
+
+            var buttonConfirm = chromeDriver.FindElement(By.XPath(Localization.XPath_ConfirmBtn));
+            var arrivalTime = chromeDriver.FindElement(By.XPath(Localization.XPath_arrival_time));
+
+            var time = arrivalTime.Text;
+            TimeBeforeAttackLands = Utilities.TimeToMs(time) * 2;
+
+            buttonConfirm.Click();
+        }
+
+        public void AvoidAttack(TroopsInfo troops)
+        {
+            if (chromeDriver.Url != "https://ts4.travian.com/dorf1.php")
+            {
+                OpenTab(Tabs.Ressources);
+            }            
+
+            Debug.WriteLine($"Check if we are attacked");
+            if (CheckIfAttacked())
+            {
+                Debug.WriteLine($"We are being attacked !");
+                var timeBeforeAttack = chromeDriver.FindElement(By.XPath(Localization.Xpath_IncomingTroops_time));
+                var timeInMs = Utilities.TimeToMs(timeBeforeAttack.Text);
+
+                Debug.WriteLine($"Attack will land in {timeInMs.ToString()}.");
+
+                if (timeInMs < 60000)
+                {
+                    SendReinforcement(troops);
+                }
+                else
+                {
+                    Debug.WriteLine($"No action required for the moment");
+                }
+            }
+        }
+        
+        public bool CheckIfAttacked()
+        {
+            try
+            {
+                var incommingTroopsAttack = chromeDriver.FindElement(By.XPath(Localization.XPath_IncomingTroops_span));
+                
+                if (incommingTroopsAttack.Text.Contains("Attack"))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public void SendReinforcement(TroopsInfo troops)
+        {
+            var rallyPointUrl = Constants.travianUrl + Localization.url_rallyPoint_sendTroops;
+            NavigateTo(rallyPointUrl);
+
+            Random random = new Random();
+            LoggedWait(random.Next(1000, 2500), "Waiting For Barracks for no ban");
+
+            var inputXCoord = chromeDriver.FindElement(By.XPath(Localization.XPath_x_coord));
+            var inputYCoord = chromeDriver.FindElement(By.XPath(Localization.XPath_y_coord));
+            var buttonSend = chromeDriver.FindElement(By.XPath(Localization.XPath_OkBtn));
+
+            var inputLegionnaire = chromeDriver.FindElement(By.XPath(Localization.XPath_legionnaire));
+            var inputEquitesImperatoris = chromeDriver.FindElement(By.XPath(Localization.XPath_EquitesImperatoris));
+            var inputPraetorian = chromeDriver.FindElement(By.XPath(Localization.XPath_Praetorian));
+            var inputSettler = chromeDriver.FindElement(By.XPath(Localization.XPath_Settlers));
+
+            TroopsInfo troopsInfo = new TroopsInfo();
+
+            inputXCoord.SendKeys("-43");
+            inputYCoord.SendKeys("-42");
+
+            inputLegionnaire.SendKeys(troops.Legionnaire.Amount.ToString());
+            inputEquitesImperatoris.SendKeys(troops.EquitesImperatoris.Amount.ToString());
+            inputPraetorian.SendKeys(troops.Praetorian.Amount.ToString());
+            inputSettler.SendKeys(troops.Settlers.Amount.ToString());
+
+            Debug.WriteLine($"Following troops were sent:");
+            Debug.WriteLine($"{troops.Legionnaire.Amount.ToString()} {troops.Legionnaire.Name} were sent.");
+            Debug.WriteLine($"{troops.EquitesImperatoris.Amount.ToString()} {troops.EquitesImperatoris.Name} were sent.");
+            Debug.WriteLine($"{troops.Praetorian.Amount.ToString()} {troops.Praetorian.Name} were sent.");
+            Debug.WriteLine($"{troops.Settlers.Amount.ToString()} {troops.Settlers.Name} were sent.");
+
+            LoggedWait(random.Next(500, 1200), "Reinforcing -43|-42");
+
+            buttonSend.Click();
+            Wait(1000);
+
             var buttonConfirm = chromeDriver.FindElement(By.XPath(Localization.XPath_ConfirmBtn));
             var arrivalTime = chromeDriver.FindElement(By.XPath(Localization.XPath_arrival_time));
 
@@ -529,7 +651,7 @@ namespace TravianBot
 
         public void LoggedWait(int ms, string reason = "Attack will land in")
         {
-            int numberOfLogs = 10;
+            int numberOfLogs = 3;
             int partialWait = (int) Math.Ceiling((double) (ms / numberOfLogs));
 
             for (int i = 0; i < numberOfLogs; i++)

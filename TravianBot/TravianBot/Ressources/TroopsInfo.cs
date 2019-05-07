@@ -18,7 +18,8 @@ namespace TravianBot.Ressources
                 Wheat = 30,
                 Crop = 1,
                 Time = Utilities.TimeToMs("00:17:30")
-            }
+            },
+            Amount = 0
         };
 
         public Unit Praetorian = new Unit()
@@ -33,7 +34,8 @@ namespace TravianBot.Ressources
                 Wheat = 70,
                 Crop = 1,
                 Time = Utilities.TimeToMs("00:19:15")
-            }
+            },
+            Amount = 0
         };
 
         public Unit EquitesLegati = new Unit()
@@ -48,7 +50,8 @@ namespace TravianBot.Ressources
                 Wheat = 40,
                 Crop = 2,
                 Time = Utilities.TimeToMs("00:14:52")
-            }
+            },
+            Amount = 0
         };
 
         public Unit EquitesImperatoris = new Unit()
@@ -63,7 +66,24 @@ namespace TravianBot.Ressources
                 Wheat = 100,
                 Crop = 3,
                 Time = Utilities.TimeToMs("00:28:52")
-            }
+            },
+            Amount = 0
+        };
+
+        public Unit Settlers = new Unit
+        {
+            Name = "Equites Imperatoris",
+            building = Buildings.Residence,
+            Cost = new Cost()
+            {
+                Wood = 4600,
+                Clay = 4200,
+                Iron = 5800,
+                Wheat = 4400,
+                Crop = 1,
+                Time = Utilities.TimeToMs("02:53:42")
+            },
+            Amount = 0
         };
     }
 

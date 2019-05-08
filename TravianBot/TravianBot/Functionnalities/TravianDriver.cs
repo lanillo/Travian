@@ -66,7 +66,8 @@ namespace TravianBot
             CanBuyTroops = false;
 
             TroopsInfo troopsToBuy = new TroopsInfo();
-            troopsToBuy.EquitesImperatoris.Amount = 6;
+            troopsToBuy.EquitesImperatoris.Amount = 2;
+            troopsToBuy.Legionnaire.Amount = 5;
 
             TroopsInfo troopsToSend = new TroopsInfo();
             troopsToSend.Legionnaire.Amount = 5;
@@ -135,7 +136,6 @@ namespace TravianBot
                                 BuyTroops(buyInfo);
                             }
 
-                            Debug.WriteLine($"Checking if we are attacked");
                             AvoidAttack(TroopsToSave);
                         }
 
@@ -541,10 +541,7 @@ namespace TravianBot
 
         public void AvoidAttack(TroopsInfo troops)
         {
-            if (chromeDriver.Url != "https://ts4.travian.com/dorf1.php")
-            {
-                OpenTab(Tabs.Ressources);
-            }            
+            OpenTab(Tabs.Ressources);      
 
             Debug.WriteLine($"Check if we are attacked");
             if (CheckIfAttacked())

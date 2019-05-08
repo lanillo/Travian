@@ -429,54 +429,48 @@
     },
     {
       "Id": 51,
-      "X": -17,
-      "Y": -44,
-      "CanRaid": "true"
-    },
-    {
-      "Id": 52,
       "X": -16,
       "Y": -46,
       "CanRaid": "true"
     },
     {
-      "Id": 53,
+      "Id": 52,
       "X": -46,
       "Y": -45,
       "CanRaid": "true"
     },
     {
-      "Id": 54,
+      "Id": 53,
       "X": -21,
       "Y": -38,
       "CanRaid": "true"
     },
     {
-      "Id": 55,
+      "Id": 54,
       "X": -46,
       "Y": -43,
       "CanRaid": "true"
     },
     {
-      "Id": 56,
+      "Id": 55,
       "X": -16,
       "Y": -43,
       "CanRaid": "true"
     },
     {
-      "Id": 57,
+      "Id": 56,
       "X": -18,
       "Y": -37,
       "CanRaid": "true"
     },
     {
-      "Id": 58,
+      "Id": 57,
       "X": -17,
       "Y": -38,
       "CanRaid": "true"
     },
     {
-      "Id": 59,
+      "Id": 58,
       "X": -46,
       "Y": -38,
       "CanRaid": "false"

@@ -63,10 +63,10 @@ namespace TravianBot
             List<int> villagesToAttack = new List<int>();
             List<int> oasisToAttack = new List<int>();
 
-            CanBuyTroops = false;
+            CanBuyTroops = true;
 
             TroopsInfo troopsToBuy = new TroopsInfo();
-            troopsToBuy.EquitesImperatoris.Amount = 2;
+            troopsToBuy.EquitesImperatoris.Amount = 4;
             troopsToBuy.Legionnaire.Amount = 5;
 
             TroopsInfo troopsToSend = new TroopsInfo();

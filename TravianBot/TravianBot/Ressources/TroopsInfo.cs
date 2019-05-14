@@ -85,6 +85,22 @@ namespace TravianBot.Ressources
             },
             Amount = 0
         };
+
+        public Unit Hero = new Unit
+        {
+            Name = "Hero",
+            building = Buildings.Residence,
+            Cost = new Cost()
+            {
+                Wood = 0,
+                Clay = 0,
+                Iron = 0,
+                Wheat = 0,
+                Crop = 0,
+                Time = Utilities.TimeToMs("02:53:42")
+            },
+            Amount = 0
+        };
     }
 
     public class Unit

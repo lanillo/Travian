@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Functionnalities\Enums\Buildings.cs" />
+    <Compile Include="Functionnalities\Enums\Cities.cs" />
     <Compile Include="Functionnalities\Enums\Messages.cs" />
     <Compile Include="Functionnalities\Enums\Troops.cs" />
     <Compile Include="Functionnalities\Utilities\AttackTargets.cs" />

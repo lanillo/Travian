@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace TravianBot.Functionnalities.Enums
 {
-    public enum Messages
+    public enum Cities
     {
-        All,
-        Legionnaire,
-        LegionnaireWithHero,
-        EquitesImperatoris,
-        EquitesImperatorisWithHero,
-        None
+        Praven,
+        Suno
     }
 }

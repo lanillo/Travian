@@ -63,7 +63,7 @@ namespace TravianBot
             List<int> villagesToAttack = new List<int>();
             List<int> oasisToAttack = new List<int>();
 
-            CanBuyTroops = true;
+            CanBuyTroops = false;
 
             TroopsInfo troopsToBuy = new TroopsInfo();
             troopsToBuy.EquitesImperatoris.Amount = 4;
@@ -184,9 +184,22 @@ namespace TravianBot
                     else
                     {
                         NumberOfTries = 0;
+                        SelectMainVillage();
+                        OpenTab(Tabs.Building);
                     }
                 }                
             }
+        }
+
+        public void SelectMainVillage()
+        {
+            chromeDriver.FindElement(By.XPath(Localization.XPath_MainVillage)).Click();
+        }
+
+        public void EnsureWeAreInMainVillage()
+        {
+            var villages = chromeDriver.FindElement(By.XPath(Localization.XPath_MainVillage));
+            
         }
 
         # region Navigation
@@ -225,12 +238,12 @@ namespace TravianBot
             Debug.WriteLine("Clicked on tab " + tab.ToString());
         }
 
-        public string GetTabUrl(Tabs tab)
+        public string GetTabUrl(Tabs tab, Cities cities = Cities.Praven)
         {
             switch (tab)
             {
                 case Tabs.Ressources:
-                    return Constants.travianUrl + Localization.url_ressources;
+                    return Constants.travianUrl + Localization.url_ressources_Praven;
                 case Tabs.Building:
                     return Constants.travianUrl + Localization.url_building;
                 case Tabs.Map:
@@ -290,7 +303,7 @@ namespace TravianBot
             }
         }
         
-        public Messages CheckIfEnoughTroops(TroopsInfo attackTroops)
+        public Messages CheckIfEnoughTroops(TroopsInfo attackTroops, bool requiresHero = false)
         {
             Random random = new Random();
             LoggedWait(random.Next(2000, 4000), "Waiting before checking for troops");
@@ -302,6 +315,7 @@ namespace TravianBot
 
             bool enoughLegionnaire = false;
             bool enoughEquitesImperatoris = false;
+            bool enoughHero = false;
 
             foreach (var row in TroopRows)
             {
@@ -320,6 +334,15 @@ namespace TravianBot
                     }
                 }
 
+                //If Hero
+                if (textSplitted[1].Contains(attackTroops.Hero.Name))
+                {
+                    if (amount >= 1)
+                    {
+                        enoughHero = true;
+                    }
+                }
+
                 //If Equites Imperatoris
                 if (textSplitted[1].Contains(attackTroops.EquitesImperatoris.Name))
                 {
@@ -330,22 +353,44 @@ namespace TravianBot
                 }
             }
 
-            if (enoughEquitesImperatoris && enoughLegionnaire)
+            if (!requiresHero)
             {
-                return Messages.All;
-            }
-            else if (enoughEquitesImperatoris)
-            {
-                return Messages.EquitesImperatoris;
-            }
-            else if (enoughLegionnaire)
-            {
-                return Messages.Legionnaire;
+                if (enoughEquitesImperatoris && enoughLegionnaire)
+                {
+                    return Messages.All;
+                }
+                else if (enoughEquitesImperatoris)
+                {
+                    return Messages.EquitesImperatoris;
+                }
+                else if (enoughLegionnaire)
+                {
+                    return Messages.Legionnaire;
+                }
+                else
+                {
+                    return Messages.None;
+                }
             }
             else
             {
-                return Messages.None;
-            }
+                if (enoughEquitesImperatoris && enoughLegionnaire && enoughHero)
+                {
+                    return Messages.All;
+                }
+                else if (enoughEquitesImperatoris && enoughHero)
+                {
+                    return Messages.EquitesImperatorisWithHero;
+                }
+                else if (enoughLegionnaire && enoughHero)
+                {
+                    return Messages.LegionnaireWithHero;
+                }
+                else
+                {
+                    return Messages.None;
+                }
+            }            
         }
 
         #endregion

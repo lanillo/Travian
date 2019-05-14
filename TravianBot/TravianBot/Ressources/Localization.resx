@@ -129,8 +129,8 @@
   <data name="url_map" xml:space="preserve">
     <value>karte.php</value>
   </data>
-  <data name="url_ressources" xml:space="preserve">
-    <value>dorf1.php</value>
+  <data name="url_ressources_Praven" xml:space="preserve">
+    <value>dorf1.php?newdid=56449&amp;</value>
   </data>
   <data name="id_clay" xml:space="preserve">
     <value>//*[@id='l2']</value>
@@ -230,5 +230,14 @@
   </data>
   <data name="XPath_Settlers" xml:space="preserve">
     <value>//*[@id="troops"]/tbody/tr[2]/td[4]/input</value>
+  </data>
+  <data name="XPath_MainVillage" xml:space="preserve">
+    <value>//*[@id="sidebarBoxVillagelist"]/div[2]/div[2]/ul/li[2]/a</value>
+  </data>
+  <data name="XPath_VillageList" xml:space="preserve">
+    <value>//*[@id="sidebarBoxVillagelist"]/div[2]/div[2]/ul</value>
+  </data>
+  <data name="url_ressources_Suno" xml:space="preserve">
+    <value>dorf1.php?newdid=71545&amp;</value>
   </data>
 </root>

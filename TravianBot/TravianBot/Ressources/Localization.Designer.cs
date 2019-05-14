@@ -160,11 +160,20 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to dorf1.php.
+        ///   Looks up a localized string similar to dorf1.php?newdid=56449&amp;.
         /// </summary>
-        internal static string url_ressources {
+        internal static string url_ressources_Praven {
             get {
-                return ResourceManager.GetString("url_ressources", resourceCulture);
+                return ResourceManager.GetString("url_ressources_Praven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to dorf1.php?newdid=71545&amp;.
+        /// </summary>
+        internal static string url_ressources_Suno {
+            get {
+                return ResourceManager.GetString("url_ressources_Suno", resourceCulture);
             }
         }
         
@@ -295,6 +304,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;sidebarBoxVillagelist&quot;]/div[2]/div[2]/ul/li[2]/a.
+        /// </summary>
+        internal static string XPath_MainVillage {
+            get {
+                return ResourceManager.GetString("XPath_MainVillage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //*[@id=&quot;build&quot;]/div[2]/p.
         /// </summary>
         internal static string XPath_noVillage_msg {
@@ -381,6 +399,15 @@ namespace TravianBot.Ressources {
         internal static string XPath_troops_rows {
             get {
                 return ResourceManager.GetString("XPath_troops_rows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;sidebarBoxVillagelist&quot;]/div[2]/div[2]/ul.
+        /// </summary>
+        internal static string XPath_VillageList {
+            get {
+                return ResourceManager.GetString("XPath_VillageList", resourceCulture);
             }
         }
         

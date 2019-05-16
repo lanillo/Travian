@@ -230,6 +230,13 @@ namespace TravianBot
             string url;
             url = GetTabUrl(tab);
 
+            Random random = new Random();
+            if (random.Next(1, 10) == 2)
+            {
+                NavigateTo(url);
+                return;
+            }
+
             if (url != chromeDriver.Url)
             {
                 NavigateTo(url);

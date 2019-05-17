@@ -70,7 +70,7 @@ namespace TravianBot
             troopsToBuy.Legionnaire.Amount = 5;
 
             TroopsInfo troopsToSend = new TroopsInfo();
-            troopsToSend.Legionnaire.Amount = 5;
+            troopsToSend.Legionnaire.Amount = 0;
             troopsToSend.EquitesImperatoris.Amount = 2;
             
 
@@ -156,7 +156,19 @@ namespace TravianBot
                         }
                         else if (result == Messages.Legionnaire || result == Messages.All)
                         {
-                            SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
+                            if (attackInfo.Legionnaire.Amount != 0)
+                            {
+                                SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
+                            }
+                            else if (attackInfo.EquitesImperatoris.Amount != 0)
+                            {
+                                SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris);
+                            }
+                            else
+                            {
+                                Debug.WriteLine($"No troop was sent cause amounts were all at 0");
+                                i--;
+                            }
 
                             targets.Villages[i].IsAttacked = true;
 

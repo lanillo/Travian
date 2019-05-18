@@ -42,7 +42,7 @@ namespace TravianBot
         public Functionalities()
         {
             targets = Utilities.GetDataJson(System.IO.Path.GetFullPath(@"..\..\Ressources\data.json"));
-            TroopsToSave.Praetorian.Amount = 11;
+            TroopsToSave.Praetorian.Amount = 0;
             TroopsToSave.Settlers.Amount = 3;
         }
 

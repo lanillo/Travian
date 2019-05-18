@@ -268,6 +268,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;movements&quot;]/tbody/tr[1]/th.
+        /// </summary>
+        internal static string XPath_IncomingTroops_section {
+            get {
+                return ResourceManager.GetString("XPath_IncomingTroops_section", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //*[@id=&quot;movements&quot;]/tbody/tr[2]/td[2]/div[1]/span.
         /// </summary>
         internal static string XPath_IncomingTroops_span {

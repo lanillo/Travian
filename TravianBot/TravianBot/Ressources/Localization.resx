@@ -240,4 +240,7 @@
   <data name="url_ressources_Suno" xml:space="preserve">
     <value>dorf1.php?newdid=71545&amp;</value>
   </data>
+  <data name="XPath_IncomingTroops_section" xml:space="preserve">
+    <value>//*[@id="movements"]/tbody/tr[1]/th</value>
+  </data>
 </root>

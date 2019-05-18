@@ -70,7 +70,7 @@ namespace TravianBot
             troopsToBuy.Legionnaire.Amount = 5;
 
             TroopsInfo troopsToSend = new TroopsInfo();
-            troopsToSend.Legionnaire.Amount = 0;
+            troopsToSend.Legionnaire.Amount = 5;
             troopsToSend.EquitesImperatoris.Amount = 2;
             
 
@@ -154,7 +154,20 @@ namespace TravianBot
 
                             targets.Villages[i].IsAttacked = false;
                         }
-                        else if (result == Messages.Legionnaire || result == Messages.All)
+                        else if (result == Messages.Legionnaire)
+                        {
+                            SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
+
+                            targets.Villages[i].IsAttacked = true;
+
+                            Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
+                            Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                            Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.EquitesImperatoris.Amount} {attackInfo.EquitesImperatoris.Name}");
+
+
+                            targets.Villages[i].IsAttacked = false;
+                        }
+                        else if (result == Messages.All)
                         {
                             if (attackInfo.Legionnaire.Amount != 0)
                             {
@@ -177,6 +190,10 @@ namespace TravianBot
                             Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.Legionnaire.Amount} {attackInfo.Legionnaire.Name}");
 
                             targets.Villages[i].IsAttacked = false;
+                        }
+                        else if (result == Messages.None)
+                        {
+                            Debug.WriteLine("No troop was sent");
                         }
                         else
                         {
@@ -347,6 +364,7 @@ namespace TravianBot
                 // If legionnaire
                 if (textSplitted[1].Contains(attackTroops.Legionnaire.Name))
                 {
+                    
                     if (amount >= attackTroops.Legionnaire.Amount)
                     {
                         enoughLegionnaire = true;
@@ -370,6 +388,18 @@ namespace TravianBot
                         enoughEquitesImperatoris = true;
                     }
                 }
+
+                Debug.WriteLine($"{amount} {textSplitted[1]}");
+            }
+
+            if (attackTroops.Legionnaire.Amount == 0)
+            {
+                enoughLegionnaire = false;
+            }
+
+            if (attackTroops.EquitesImperatoris.Amount == 0)
+            {
+                enoughEquitesImperatoris = false;
             }
 
             if (!requiresHero)
@@ -631,12 +661,16 @@ namespace TravianBot
         {
             try
             {
+                var typeOfTroops = chromeDriver.FindElement(By.XPath(Localization.XPath_IncomingTroops_section));
                 var incommingTroopsAttack = chromeDriver.FindElement(By.XPath(Localization.XPath_IncomingTroops_span));
                 
-                if (incommingTroopsAttack.Text.Contains("Attack"))
+                if (typeOfTroops.Text.Contains("Incoming"))
                 {
-                    return true;
-                }
+                    if (incommingTroopsAttack.Text.Contains("Attack"))
+                    {
+                        return true;
+                    }
+                }                
 
                 return false;
             }

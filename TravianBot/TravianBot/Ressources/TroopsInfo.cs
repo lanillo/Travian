@@ -38,6 +38,22 @@ namespace TravianBot.Ressources
             Amount = 0
         };
 
+        public Unit Imperian = new Unit()
+        {
+            Name = "Imperian",
+            building = Buildings.Barracks,
+            Cost = new Cost()
+            {
+                Wood = 150,
+                Clay = 160,
+                Iron = 210,
+                Wheat = 80,
+                Crop = 1,
+                Time = Utilities.TimeToMs("00:32:00")
+            },
+            Amount = 0
+        };
+
         public Unit EquitesLegati = new Unit()
         {
             Name = "Equites Legati",

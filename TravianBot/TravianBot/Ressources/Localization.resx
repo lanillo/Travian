@@ -243,4 +243,10 @@
   <data name="XPath_IncomingTroops_section" xml:space="preserve">
     <value>//*[@id="movements"]/tbody/tr[1]/th</value>
   </data>
+  <data name="XPath_buyXImperian" xml:space="preserve">
+    <value>//*[@id="nonFavouriteTroops"]/div[3]/div/div[2]/div[5]/input</value>
+  </data>
+  <data name="XPath_Imperian" xml:space="preserve">
+    <value>//*[@id="troops"]/tbody/tr[3]/td[1]/input</value>
+  </data>
 </root>

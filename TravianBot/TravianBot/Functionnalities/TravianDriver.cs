@@ -44,6 +44,8 @@ namespace TravianBot
             targets = Utilities.GetDataJson(System.IO.Path.GetFullPath(@"..\..\Ressources\data.json"));
             TroopsToSave.Praetorian.Amount = 0;
             TroopsToSave.Settlers.Amount = 3;
+            TroopsToSave.Imperian.Amount = 100;
+            TroopsToSave.EquitesImperatoris.Amount = 100;
         }
 
         [AssemblyInitialize]
@@ -65,13 +67,16 @@ namespace TravianBot
 
             CanBuyTroops = false;
 
-            TroopsInfo troopsToBuy = new TroopsInfo();
-            troopsToBuy.EquitesImperatoris.Amount = 4;
-            troopsToBuy.Legionnaire.Amount = 5;
+            TroopsInfo troopsToBuyPraven = new TroopsInfo();
+            troopsToBuyPraven.EquitesImperatoris.Amount = 5;
+
+            TroopsInfo troopsToBuySuno = new TroopsInfo();
+            troopsToBuySuno.Imperian.Amount = 10;
 
             TroopsInfo troopsToSend = new TroopsInfo();
-            troopsToSend.Legionnaire.Amount = 5;
+            troopsToSend.Legionnaire.Amount = 0;
             troopsToSend.EquitesImperatoris.Amount = 2;
+            troopsToSend.Imperian.Amount = 5;
             
 
             for (int i = 0; i < targets.Villages.Count; i++)
@@ -95,11 +100,11 @@ namespace TravianBot
 
             while (true)
             {                
-                SendAttackToVillages(villagesToAttack, troopsToSend, troopsToBuy);
+                SendAttackToVillages(villagesToAttack, troopsToSend, troopsToBuyPraven, troopsToBuySuno);
             }            
         }
 
-        public void SendAttackToVillages(List<int> number, TroopsInfo attackInfo, TroopsInfo buyInfo)
+        public void SendAttackToVillages(List<int> number, TroopsInfo attackInfo, TroopsInfo buyInfoPraven, TroopsInfo buyInfoSuno)
         {
             for (int i = 0; i < number.Count; i++)
             {
@@ -123,23 +128,43 @@ namespace TravianBot
 
                         Random random = new Random();
                         var randomWait = random.Next(2500, 10000);
-
                         LoggedWait(randomWait, "Waiting before attack to not get banned for");
 
-                        while (CheckIfEnoughTroops(attackInfo) == Messages.None)
+                        //Start with first village
+                        Cities city = Cities.Praven;
+                        OpenTab(Tabs.Ressources, city);
+
+                        while (CheckIfEnoughTroops(attackInfo, city) == Messages.None)
                         {
                             Debug.WriteLine($"Not enough troops in the village for attack");
 
                             if (CanBuyTroops)
                             {
                                 Debug.WriteLine($"Buying Troops");
-                                BuyTroops(buyInfo);
+                                if (city == Cities.Praven)
+                                {
+                                    BuyTroops(buyInfoPraven, city);
+                                }
+                                else if (city == Cities.Suno)
+                                {
+                                    BuyTroops(buyInfoSuno, city);
+                                }
                             }
 
                             AvoidAttack(TroopsToSave);
+
+                            if (city == Cities.Praven)
+                            {
+                                city = Cities.Suno;
+                            }
+                            else if (city == Cities.Suno)
+                            {
+                                city = Cities.Praven;
+                            }
+                            Debug.WriteLine($"Changing village to {city.ToString()}" );
                         }
 
-                        var result = CheckIfEnoughTroops(attackInfo);
+                        var result = CheckIfEnoughTroops(attackInfo, city);
 
                         if (result == Messages.EquitesImperatoris)
                         {
@@ -162,8 +187,19 @@ namespace TravianBot
 
                             Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
                             Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
-                            Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.EquitesImperatoris.Amount} {attackInfo.EquitesImperatoris.Name}");
+                            Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.Legionnaire.Amount} {attackInfo.Legionnaire.Name}");
+                            
+                            targets.Villages[i].IsAttacked = false;
+                        }
+                        else if (result == Messages.Imperian)
+                        {
+                            SendAttack(grid.X, grid.Y, attackInfo.Imperian);
 
+                            targets.Villages[i].IsAttacked = true;
+
+                            Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
+                            Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
+                            Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.Imperian.Amount} {attackInfo.Imperian.Name}");
 
                             targets.Villages[i].IsAttacked = false;
                         }
@@ -177,6 +213,10 @@ namespace TravianBot
                             {
                                 SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris);
                             }
+                            else if (attackInfo.Imperian.Amount != 0)
+                            {
+                                SendAttack(grid.X, grid.Y, attackInfo.Imperian);
+                            }
                             else
                             {
                                 Debug.WriteLine($"No troop was sent cause amounts were all at 0");
@@ -187,7 +227,7 @@ namespace TravianBot
 
                             Debug.WriteLine($"{DateTime.Now} - Attacking X: {grid.X} - Y: {grid.Y}.");
                             Debug.WriteLine($"{DateTime.Now} - Attack will land in {TimeBeforeAttackLands.ToString()}");
-                            Debug.WriteLine($"{DateTime.Now} - Attacking with {attackInfo.Legionnaire.Amount} {attackInfo.Legionnaire.Name}");
+                            Debug.WriteLine($"{DateTime.Now} - Attacking with ---");
 
                             targets.Villages[i].IsAttacked = false;
                         }
@@ -254,10 +294,10 @@ namespace TravianBot
             Debug.WriteLine("Connected as " + username);
         }
 
-        public void OpenTab(Tabs tab)
+        public void OpenTab(Tabs tab, Cities city = Cities.Praven)
         {
             string url;
-            url = GetTabUrl(tab);
+            url = GetTabUrl(tab, city);
 
             Random random = new Random();
             if (random.Next(1, 10) == 2)
@@ -279,6 +319,10 @@ namespace TravianBot
             switch (tab)
             {
                 case Tabs.Ressources:
+                    if (cities == Cities.Suno)
+                    {
+                        return Constants.travianUrl + Localization.url_ressources_Suno;
+                    }
                     return Constants.travianUrl + Localization.url_ressources_Praven;
                 case Tabs.Building:
                     return Constants.travianUrl + Localization.url_building;
@@ -339,18 +383,19 @@ namespace TravianBot
             }
         }
         
-        public Messages CheckIfEnoughTroops(TroopsInfo attackTroops, bool requiresHero = false)
+        public Messages CheckIfEnoughTroops(TroopsInfo attackTroops, Cities city, bool requiresHero = false)
         {
             Random random = new Random();
             LoggedWait(random.Next(2000, 4000), "Waiting before checking for troops");
 
-            OpenTab(Tabs.Ressources);
+            OpenTab(Tabs.Ressources, city);
             var TroopRows = chromeDriver.FindElements(By.XPath(Localization.XPath_troops_rows));
 
             LoggedWait(random.Next(500, 2000), "Waiting for page to avoid stale element exception");
 
             bool enoughLegionnaire = false;
             bool enoughEquitesImperatoris = false;
+            bool enoughImperian = false;
             bool enoughHero = false;
 
             foreach (var row in TroopRows)
@@ -389,6 +434,15 @@ namespace TravianBot
                     }
                 }
 
+                //If Imperian
+                if (textSplitted[1].Contains(attackTroops.Imperian.Name))
+                {
+                    if (amount >= attackTroops.Imperian.Amount)
+                    {
+                        enoughImperian = true;
+                    }
+                }
+
                 Debug.WriteLine($"{amount} {textSplitted[1]}");
             }
 
@@ -400,6 +454,11 @@ namespace TravianBot
             if (attackTroops.EquitesImperatoris.Amount == 0)
             {
                 enoughEquitesImperatoris = false;
+            }
+
+            if (attackTroops.Imperian.Amount == 0)
+            {
+                enoughImperian = false;
             }
 
             if (!requiresHero)
@@ -415,6 +474,10 @@ namespace TravianBot
                 else if (enoughLegionnaire)
                 {
                     return Messages.Legionnaire;
+                }
+                else if (enoughImperian)
+                {
+                    return Messages.Imperian;
                 }
                 else
                 {
@@ -434,6 +497,10 @@ namespace TravianBot
                 else if (enoughLegionnaire && enoughHero)
                 {
                     return Messages.LegionnaireWithHero;
+                }
+                else if (enoughImperian && enoughHero)
+                {
+                    return Messages.ImperianWithHero;
                 }
                 else
                 {
@@ -487,12 +554,14 @@ namespace TravianBot
             }
         }*/
 
-        private void BuyTroops(TroopsInfo buyInfo)
+        private void BuyTroops(TroopsInfo buyInfo, Cities city)
         {
+            OpenTab(Tabs.Ressources, city);
             RefreshRessources();
 
             bool CanBuyEquitesImperatoris = true;
             bool CanBuyLegionnaire = true;
+            bool CanBuyImperian = true;
 
             if (!EnoughRessources(buyInfo.EquitesImperatoris))
             {
@@ -502,6 +571,11 @@ namespace TravianBot
             else if (!EnoughRessources(buyInfo.Legionnaire))
             {
                 CanBuyLegionnaire = false;
+                Debug.WriteLine($"Not enough ressources for {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
+            }
+            else if (!EnoughRessources(buyInfo.Imperian))
+            {
+                CanBuyImperian = false;
                 Debug.WriteLine($"Not enough ressources for {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
             }
             else
@@ -550,6 +624,28 @@ namespace TravianBot
 
                     return;
                 }
+                else if (CanBuyImperian && city == Cities.Suno)
+                {
+                    Debug.WriteLine($"Buying {buyInfo.Imperian.Amount} {buyInfo.Imperian.Name}");
+
+                    Random random = new Random();
+                    var waitTime = random.Next(1000, 2500);
+
+                    var url = Constants.travianUrl + Localization.url_barracks;
+                    NavigateTo(url);
+                    Wait(waitTime);
+
+                    var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXImperian));
+                    buyXInput.SendKeys(buyInfo.Imperian.Amount.ToString());
+
+                    var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
+                    trainBtn.Click();
+
+                    Debug.WriteLine($"Bought {buyInfo.Imperian.Amount} {buyInfo.Imperian.Name}");
+                    Wait(waitTime);
+
+                    return;
+                }
                 else
                 {
                     Random random = new Random();
@@ -576,6 +672,7 @@ namespace TravianBot
 
             var inputLegionnaire = chromeDriver.FindElement(By.XPath(Localization.XPath_legionnaire));
             var inputEquitesImperatoris = chromeDriver.FindElement(By.XPath(Localization.XPath_EquitesImperatoris));
+            var inputImperian = chromeDriver.FindElement(By.XPath(Localization.XPath_Imperian));
 
             if (sendHero)
             {
@@ -593,6 +690,10 @@ namespace TravianBot
             else if (troops.Name == troopsInfo.EquitesImperatoris.Name)
             {
                 inputEquitesImperatoris.SendKeys(troops.Amount.ToString());
+            }
+            else if (troops.Name == troopsInfo.Imperian.Name)
+            {
+                inputImperian.SendKeys(troops.Amount.ToString());
             }
 
             Debug.WriteLine($"{troops.Amount} {troops.Name} were sent.");

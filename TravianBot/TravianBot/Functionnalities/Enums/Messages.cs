@@ -13,6 +13,8 @@ namespace TravianBot.Functionnalities.Enums
         LegionnaireWithHero,
         EquitesImperatoris,
         EquitesImperatorisWithHero,
+        Imperian,
+        ImperianWithHero,
         None
     }
 }

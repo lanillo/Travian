@@ -223,6 +223,15 @@ namespace TravianBot.Ressources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;nonFavouriteTroops&quot;]/div[3]/div/div[2]/div[5]/input.
+        /// </summary>
+        internal static string XPath_buyXImperian {
+            get {
+                return ResourceManager.GetString("XPath_buyXImperian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to //*[@id=&quot;nonFavouriteTroops&quot;]/div[1]/div/div[2]/div[4]/input.
         /// </summary>
         internal static string XPath_buyXLegionnaire {
@@ -264,6 +273,15 @@ namespace TravianBot.Ressources {
         internal static string XPath_hero {
             get {
                 return ResourceManager.GetString("XPath_hero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to //*[@id=&quot;troops&quot;]/tbody/tr[3]/td[1]/input.
+        /// </summary>
+        internal static string XPath_Imperian {
+            get {
+                return ResourceManager.GetString("XPath_Imperian", resourceCulture);
             }
         }
         

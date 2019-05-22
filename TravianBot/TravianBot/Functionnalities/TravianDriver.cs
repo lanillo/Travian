@@ -559,102 +559,102 @@ namespace TravianBot
             OpenTab(Tabs.Ressources, city);
             RefreshRessources();
 
-            bool CanBuyEquitesImperatoris = true;
-            bool CanBuyLegionnaire = true;
-            bool CanBuyImperian = true;
+            bool CanBuyEquitesImperatoris = false;
+            bool CanBuyLegionnaire = false;
+            bool CanBuyImperian = false;
 
-            if (!EnoughRessources(buyInfo.EquitesImperatoris))
+            if (EnoughRessources(buyInfo.Legionnaire) && buyInfo.Legionnaire.Amount > 0)
             {
-                CanBuyEquitesImperatoris = false;
-                Debug.WriteLine($"Not enough ressources for {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
+                CanBuyLegionnaire = true;
+                Debug.WriteLine($"Enough ressources for {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
             }
-            else if (!EnoughRessources(buyInfo.Legionnaire))
+
+            if (EnoughRessources(buyInfo.EquitesImperatoris) && buyInfo.EquitesImperatoris.Amount > 0)
             {
-                CanBuyLegionnaire = false;
-                Debug.WriteLine($"Not enough ressources for {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
+                CanBuyEquitesImperatoris = true;
+                Debug.WriteLine($"Enough ressources for {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
             }
-            else if (!EnoughRessources(buyInfo.Imperian))
+
+            if (EnoughRessources(buyInfo.Imperian) && buyInfo.Imperian.Amount > 0)
             {
-                CanBuyImperian = false;
-                Debug.WriteLine($"Not enough ressources for {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
+                CanBuyImperian = true;
+                Debug.WriteLine($"Enough ressources for {buyInfo.Imperian.Amount} {buyInfo.Imperian.Name}");
+            }
+
+            if (CanBuyEquitesImperatoris)
+            {
+                Debug.WriteLine($"Buying {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
+
+                Random random = new Random();
+                var waitTime = random.Next(1000, 2500);
+
+                var url = Constants.travianUrl + Localization.url_stables;
+                NavigateTo(url);
+                Wait(waitTime);
+
+                var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXEquitesImperatoris));
+                buyXInput.SendKeys(buyInfo.EquitesImperatoris.Amount.ToString());
+
+                var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
+                trainBtn.Click();
+
+                Debug.WriteLine($"Bought {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
+                Wait(waitTime);
+
+                return;
+            }
+            else if (CanBuyLegionnaire)
+            {
+                Debug.WriteLine($"Buying {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
+
+                Random random = new Random();
+                var waitTime = random.Next(1000, 2500);
+
+                var url = Constants.travianUrl + Localization.url_barracks;
+                NavigateTo(url);
+                Wait(waitTime);
+
+                var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXLegionnaire));
+                buyXInput.SendKeys(buyInfo.Legionnaire.Amount.ToString());
+
+                var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
+                trainBtn.Click();
+
+                Debug.WriteLine($"Bought {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
+                Wait(waitTime);
+
+                return;
+            }
+            else if (CanBuyImperian)
+            {
+                Debug.WriteLine($"Buying {buyInfo.Imperian.Amount} {buyInfo.Imperian.Name}");
+
+                Random random = new Random();
+                var waitTime = random.Next(1000, 2500);
+
+                var url = Constants.travianUrl + Localization.url_barracks;
+                NavigateTo(url);
+                Wait(waitTime);
+
+                var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXImperian));
+                buyXInput.SendKeys(buyInfo.Imperian.Amount.ToString());
+
+                var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
+                trainBtn.Click();
+
+                Debug.WriteLine($"Bought {buyInfo.Imperian.Amount} {buyInfo.Imperian.Name}");
+                Wait(waitTime);
+
+                return;
             }
             else
             {
-                if (CanBuyEquitesImperatoris)
-                {
-                    Debug.WriteLine($"Buying {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
-
-                    Random random = new Random();
-                    var waitTime = random.Next(1000, 2500);
-
-                    var url = Constants.travianUrl + Localization.url_stables;
-                    NavigateTo(url);
-                    Wait(waitTime);
-
-                    var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXEquitesImperatoris));
-                    buyXInput.SendKeys(buyInfo.EquitesImperatoris.Amount.ToString());
-
-                    var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
-                    trainBtn.Click();
-
-                    Debug.WriteLine($"Bought {buyInfo.EquitesImperatoris.Amount} {buyInfo.EquitesImperatoris.Name}");
-                    Wait(waitTime);
-
-                    return;
-                }
-                else if (CanBuyLegionnaire)
-                {
-                    Debug.WriteLine($"Buying {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
-
-                    Random random = new Random();
-                    var waitTime = random.Next(1000, 2500);
-
-                    var url = Constants.travianUrl + Localization.url_barracks;
-                    NavigateTo(url);
-                    Wait(waitTime);
-
-                    var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXLegionnaire));
-                    buyXInput.SendKeys(buyInfo.Legionnaire.Amount.ToString());
-
-                    var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
-                    trainBtn.Click();
-
-                    Debug.WriteLine($"Bought {buyInfo.Legionnaire.Amount} {buyInfo.Legionnaire.Name}");
-                    Wait(waitTime);
-
-                    return;
-                }
-                else if (CanBuyImperian && city == Cities.Suno)
-                {
-                    Debug.WriteLine($"Buying {buyInfo.Imperian.Amount} {buyInfo.Imperian.Name}");
-
-                    Random random = new Random();
-                    var waitTime = random.Next(1000, 2500);
-
-                    var url = Constants.travianUrl + Localization.url_barracks;
-                    NavigateTo(url);
-                    Wait(waitTime);
-
-                    var buyXInput = chromeDriver.FindElement(By.XPath(Localization.XPath_buyXImperian));
-                    buyXInput.SendKeys(buyInfo.Imperian.Amount.ToString());
-
-                    var trainBtn = chromeDriver.FindElement(By.XPath(Localization.XPath_train_troops));
-                    trainBtn.Click();
-
-                    Debug.WriteLine($"Bought {buyInfo.Imperian.Amount} {buyInfo.Imperian.Name}");
-                    Wait(waitTime);
-
-                    return;
-                }
-                else
-                {
-                    Random random = new Random();
-                    var waitTime = random.Next(2500, 15000);
-                    Debug.WriteLine($"waiting for {waitTime / 1000} secs.");
-                    Wait(waitTime);
-                    return;
-                }
-            }       
+                Random random = new Random();
+                var waitTime = random.Next(2500, 15000);
+                Debug.WriteLine($"waiting for {waitTime / 1000} secs.");
+                Wait(waitTime);
+                return;
+            }      
         }
 
         public void SendAttack(int x, int y, Unit troops, bool sendHero = false)

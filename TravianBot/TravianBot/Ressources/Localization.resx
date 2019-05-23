@@ -192,7 +192,7 @@
   <data name="XPath_train_troops" xml:space="preserve">
     <value>//*[@id="s1"]</value>
   </data>
-  <data name="url_barracks" xml:space="preserve">
+  <data name="url_barracks_Praven" xml:space="preserve">
     <value>build.php?id=31</value>
   </data>
   <data name="XPath_troops_row_one" xml:space="preserve">
@@ -248,5 +248,8 @@
   </data>
   <data name="XPath_Imperian" xml:space="preserve">
     <value>//*[@id="troops"]/tbody/tr[3]/td[1]/input</value>
+  </data>
+  <data name="url_barracks_Suno" xml:space="preserve">
+    <value>build.php?id=30</value>
   </data>
 </root>

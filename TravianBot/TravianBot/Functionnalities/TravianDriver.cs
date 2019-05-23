@@ -95,7 +95,6 @@ namespace TravianBot
             LoggedWait(waitForAttack, "Waiting for last attack to land");           
             
             Login();
-            OpenTab(Tabs.Ressources);
             RefreshRessources();
 
             while (true)
@@ -132,7 +131,7 @@ namespace TravianBot
 
                         //Start with first village
                         Cities city = Cities.Praven;
-                        OpenTab(Tabs.Ressources, city);
+                        OpenTab(Tabs.Ressources, Cities.Praven);
 
                         while (CheckIfEnoughTroops(attackInfo, city) == Messages.None)
                         {
@@ -161,6 +160,10 @@ namespace TravianBot
                             {
                                 city = Cities.Praven;
                             }
+
+                            var changingCityWait = random.Next(10000, 20000);
+                            LoggedWait(randomWait, "Waiting before changing city");
+
                             Debug.WriteLine($"Changing village to {city.ToString()}" );
                         }
 
@@ -254,7 +257,7 @@ namespace TravianBot
                     {
                         NumberOfTries = 0;
                         SelectMainVillage();
-                        OpenTab(Tabs.Building);
+                        OpenTab(Tabs.Ressources);
                     }
                 }                
             }
@@ -610,7 +613,7 @@ namespace TravianBot
                 Random random = new Random();
                 var waitTime = random.Next(1000, 2500);
 
-                var url = Constants.travianUrl + Localization.url_barracks;
+                var url = Constants.travianUrl + Localization.url_barracks_Praven;
                 NavigateTo(url);
                 Wait(waitTime);
 
@@ -632,7 +635,7 @@ namespace TravianBot
                 Random random = new Random();
                 var waitTime = random.Next(1000, 2500);
 
-                var url = Constants.travianUrl + Localization.url_barracks;
+                var url = Constants.travianUrl + Localization.url_barracks_Suno;
                 NavigateTo(url);
                 Wait(waitTime);
 

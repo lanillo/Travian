@@ -117,9 +117,18 @@ namespace TravianBot.Ressources {
         /// <summary>
         ///   Looks up a localized string similar to build.php?id=31.
         /// </summary>
-        internal static string url_barracks {
+        internal static string url_barracks_Praven {
             get {
-                return ResourceManager.GetString("url_barracks", resourceCulture);
+                return ResourceManager.GetString("url_barracks_Praven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to build.php?id=30.
+        /// </summary>
+        internal static string url_barracks_Suno {
+            get {
+                return ResourceManager.GetString("url_barracks_Suno", resourceCulture);
             }
         }
         

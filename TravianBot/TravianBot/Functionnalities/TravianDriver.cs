@@ -133,7 +133,7 @@ namespace TravianBot
                         Cities city = Cities.Praven;
                         OpenTab(Tabs.Ressources, Cities.Praven);
 
-                        while (CheckIfEnoughTroops(attackInfo, city) == Messages.None)
+                        while (CheckIfEnoughTroops(attackInfo, city, grid.Multiplier) == Messages.None)
                         {
                             Debug.WriteLine($"Not enough troops in the village for attack");
 
@@ -167,11 +167,11 @@ namespace TravianBot
                             Debug.WriteLine($"Changing village to {city.ToString()}" );
                         }
 
-                        var result = CheckIfEnoughTroops(attackInfo, city);
+                        var result = CheckIfEnoughTroops(attackInfo, city, grid.Multiplier);
 
                         if (result == Messages.EquitesImperatoris)
                         {
-                            SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris);
+                            SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris, grid.Multiplier);
 
                             targets.Villages[i].IsAttacked = true;
 
@@ -184,7 +184,7 @@ namespace TravianBot
                         }
                         else if (result == Messages.Legionnaire)
                         {
-                            SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
+                            SendAttack(grid.X, grid.Y, attackInfo.Legionnaire, grid.Multiplier);
 
                             targets.Villages[i].IsAttacked = true;
 
@@ -196,7 +196,7 @@ namespace TravianBot
                         }
                         else if (result == Messages.Imperian)
                         {
-                            SendAttack(grid.X, grid.Y, attackInfo.Imperian);
+                            SendAttack(grid.X, grid.Y, attackInfo.Imperian, grid.Multiplier);
 
                             targets.Villages[i].IsAttacked = true;
 
@@ -210,15 +210,15 @@ namespace TravianBot
                         {
                             if (attackInfo.Legionnaire.Amount != 0)
                             {
-                                SendAttack(grid.X, grid.Y, attackInfo.Legionnaire);
+                                SendAttack(grid.X, grid.Y, attackInfo.Legionnaire, grid.Multiplier);
                             }
                             else if (attackInfo.EquitesImperatoris.Amount != 0)
                             {
-                                SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris);
+                                SendAttack(grid.X, grid.Y, attackInfo.EquitesImperatoris, grid.Multiplier);
                             }
                             else if (attackInfo.Imperian.Amount != 0)
                             {
-                                SendAttack(grid.X, grid.Y, attackInfo.Imperian);
+                                SendAttack(grid.X, grid.Y, attackInfo.Imperian, grid.Multiplier);
                             }
                             else
                             {
@@ -386,7 +386,7 @@ namespace TravianBot
             }
         }
         
-        public Messages CheckIfEnoughTroops(TroopsInfo attackTroops, Cities city, bool requiresHero = false)
+        public Messages CheckIfEnoughTroops(TroopsInfo attackTroops, Cities city, int multiplier, bool requiresHero = false)
         {
             Random random = new Random();
             LoggedWait(random.Next(2000, 4000), "Waiting before checking for troops");
@@ -409,16 +409,6 @@ namespace TravianBot
                 if (textSplitted[1] == "Equites")
                     textSplitted[1] = $"{textSplitted[1]} {textSplitted[2]}";
 
-                // If legionnaire
-                if (textSplitted[1].Contains(attackTroops.Legionnaire.Name))
-                {
-                    
-                    if (amount >= attackTroops.Legionnaire.Amount)
-                    {
-                        enoughLegionnaire = true;
-                    }
-                }
-
                 //If Hero
                 if (textSplitted[1].Contains(attackTroops.Hero.Name))
                 {
@@ -428,10 +418,20 @@ namespace TravianBot
                     }
                 }
 
+                // If legionnaire
+                if (textSplitted[1].Contains(attackTroops.Legionnaire.Name))
+                {
+                    
+                    if (amount >= attackTroops.Legionnaire.Amount * multiplier)
+                    {
+                        enoughLegionnaire = true;
+                    }
+                }
+
                 //If Equites Imperatoris
                 if (textSplitted[1].Contains(attackTroops.EquitesImperatoris.Name))
                 {
-                    if (amount >= attackTroops.EquitesImperatoris.Amount)
+                    if (amount >= attackTroops.EquitesImperatoris.Amount * multiplier)
                     {
                         enoughEquitesImperatoris = true;
                     }
@@ -440,7 +440,7 @@ namespace TravianBot
                 //If Imperian
                 if (textSplitted[1].Contains(attackTroops.Imperian.Name))
                 {
-                    if (amount >= attackTroops.Imperian.Amount)
+                    if (amount >= attackTroops.Imperian.Amount * multiplier)
                     {
                         enoughImperian = true;
                     }
@@ -660,13 +660,15 @@ namespace TravianBot
             }      
         }
 
-        public void SendAttack(int x, int y, Unit troops, bool sendHero = false)
+        public void SendAttack(int x, int y, Unit troops, int multiplier, bool sendHero = false)
         {
             var rallyPointUrl = Constants.travianUrl + Localization.url_rallyPoint_sendTroops;
             NavigateTo(rallyPointUrl);
 
             Random random = new Random();
             LoggedWait(random.Next(1000, 2500), "Waiting For Barracks for no ban");
+
+            var amount = troops.Amount * multiplier;
 
             var inputXCoord = chromeDriver.FindElement(By.XPath(Localization.XPath_x_coord));
             var inputYCoord = chromeDriver.FindElement(By.XPath(Localization.XPath_y_coord));
@@ -688,15 +690,15 @@ namespace TravianBot
 
             if (troops.Name == troopsInfo.Legionnaire.Name)
             {
-                inputLegionnaire.SendKeys(troops.Amount.ToString());
+                inputLegionnaire.SendKeys(amount.ToString());
             }
             else if (troops.Name == troopsInfo.EquitesImperatoris.Name)
             {
-                inputEquitesImperatoris.SendKeys(troops.Amount.ToString());
+                inputEquitesImperatoris.SendKeys(amount.ToString());
             }
             else if (troops.Name == troopsInfo.Imperian.Name)
             {
-                inputImperian.SendKeys(troops.Amount.ToString());
+                inputImperian.SendKeys(amount.ToString());
             }
 
             Debug.WriteLine($"{troops.Amount} {troops.Name} were sent.");

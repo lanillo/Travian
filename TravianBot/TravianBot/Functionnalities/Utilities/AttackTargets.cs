@@ -43,6 +43,9 @@ namespace TravianBot.Functionnalities.Data
         [JsonProperty("CanRaid")]
         public bool CanRaid { get; set; }
 
+        [JsonProperty("Multiplier")]
+        public int Multiplier { get; set; }
+
         public bool IsAttacked { get; set; }
     }
 }

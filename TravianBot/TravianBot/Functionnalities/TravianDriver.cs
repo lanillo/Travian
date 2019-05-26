@@ -44,8 +44,6 @@ namespace TravianBot
             targets = Utilities.GetDataJson(System.IO.Path.GetFullPath(@"..\..\Ressources\data.json"));
             TroopsToSave.Praetorian.Amount = 0;
             TroopsToSave.Settlers.Amount = 3;
-            TroopsToSave.Imperian.Amount = 100;
-            TroopsToSave.EquitesImperatoris.Amount = 100;
         }
 
         [AssemblyInitialize]
@@ -68,13 +66,13 @@ namespace TravianBot
             CanBuyTroops = false;
 
             TroopsInfo troopsToBuyPraven = new TroopsInfo();
-            troopsToBuyPraven.EquitesImperatoris.Amount = 5;
+            troopsToBuyPraven.EquitesImperatoris.Amount = 20;
 
             TroopsInfo troopsToBuySuno = new TroopsInfo();
-            troopsToBuySuno.Imperian.Amount = 10;
+            troopsToBuySuno.Imperian.Amount = 20;
 
             TroopsInfo troopsToSend = new TroopsInfo();
-            troopsToSend.Legionnaire.Amount = 0;
+            troopsToSend.Legionnaire.Amount = 6;
             troopsToSend.EquitesImperatoris.Amount = 2;
             troopsToSend.Imperian.Amount = 5;
             
@@ -162,7 +160,7 @@ namespace TravianBot
                             }
 
                             var changingCityWait = random.Next(10000, 20000);
-                            LoggedWait(randomWait, "Waiting before changing city");
+                            LoggedWait(changingCityWait, "Waiting before changing city");
 
                             Debug.WriteLine($"Changing village to {city.ToString()}" );
                         }
@@ -395,6 +393,10 @@ namespace TravianBot
             var TroopRows = chromeDriver.FindElements(By.XPath(Localization.XPath_troops_rows));
 
             LoggedWait(random.Next(500, 2000), "Waiting for page to avoid stale element exception");
+
+            Debug.WriteLine($"We need {attackTroops.Legionnaire.Amount * multiplier} {attackTroops.Legionnaire.Name}");
+            Debug.WriteLine($"We need {attackTroops.EquitesImperatoris.Amount * multiplier} {attackTroops.EquitesImperatoris.Name}");
+            Debug.WriteLine($"We need {attackTroops.Imperian.Amount * multiplier} {attackTroops.Imperian.Name}");
 
             bool enoughLegionnaire = false;
             bool enoughEquitesImperatoris = false;
@@ -857,7 +859,7 @@ namespace TravianBot
 
             for (int i = 0; i < numberOfLogs; i++)
             {
-                System.Threading.Thread.Sleep(partialWait);
+                    System.Threading.Thread.Sleep(partialWait);
                 ms = ms - partialWait;
                 Debug.WriteLine($"{DateTime.Now} - {reason} {ms.ToString()}");
             }

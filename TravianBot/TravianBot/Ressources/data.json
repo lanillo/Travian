@@ -160,7 +160,7 @@
       "X": -34,
       "Y": -49,
       "CanRaid": "true",
-      "Multiplier": "20"
+      "Multiplier": "10"
     },
     {
       "Id": 6,
@@ -223,7 +223,7 @@
       "X": -26,
       "Y": -55,
       "CanRaid": "true",
-      "Multiplier": "1"
+      "Multiplier": "4"
     },
     {
       "Id": 15,
@@ -307,14 +307,14 @@
       "X": -41,
       "Y": -52,
       "CanRaid": "true",
-      "Multiplier": "1"
+      "Multiplier": "2"
     },
     {
       "Id": 27,
       "X": -30,
       "Y": -41,
       "CanRaid": "true",
-      "Multiplier": "20"
+      "Multiplier": "10"
     },
     {
       "Id": 28,
@@ -334,22 +334,22 @@
       "Id": 30,
       "X": -34,
       "Y": -62,
-      "CanRaid": "true",
+      "CanRaid": "false",
       "Multiplier": "1"
     },
     {
       "Id": 31,
       "X": -22,
       "Y": -43,
-      "CanRaid": "false",
-      "Multiplier": "1"
+      "CanRaid": "true",
+      "Multiplier": "20"
     },
     {
       "Id": 32,
       "X": -42,
       "Y": -56,
       "CanRaid": "true",
-      "Multiplier": "5"
+      "Multiplier": "10"
     },
     {
       "Id": 33,
@@ -411,15 +411,15 @@
       "Id": 41,
       "X": -29,
       "Y": -64,
-      "CanRaid": "false",
-      "Multiplier": "1"
+      "CanRaid": "true",
+      "Multiplier": "10"
     },
     {
       "Id": 42,
       "X": -37,
       "Y": -39,
-      "CanRaid": "false",
-      "Multiplier": "1"
+      "CanRaid": "true",
+      "Multiplier": "2"
     },
     {
       "Id": 43,
@@ -565,15 +565,15 @@
       "Id": 63,
       "X": -45,
       "Y": -59,
-      "CanRaid": "false",
-      "Multiplier": "1"
+      "CanRaid": "true",
+      "Multiplier": "2"
     },
     {
       "Id": 64,
       "X": -46,
       "Y": -45,
-      "CanRaid": "false",
-      "Multiplier": "1"
+      "CanRaid": "true",
+      "Multiplier": "2"
     },
     {
       "Id": 65,
@@ -621,8 +621,8 @@
       "Id": 71,
       "X": -44,
       "Y": -62,
-      "CanRaid": "false",
-      "Multiplier": "1"
+      "CanRaid": "true",
+      "Multiplier": "10"
     },
     {
       "Id": 72,
@@ -677,8 +677,8 @@
       "Id": 79,
       "X": -47,
       "Y": -59,
-      "CanRaid": "false",
-      "Multiplier": "1"
+      "CanRaid": "true",
+      "Multiplier": "10"
     },
     {
       "Id": 80,
@@ -727,7 +727,7 @@
       "X": -30,
       "Y": -70,
       "CanRaid": "true",
-      "Multiplier": "25"
+      "Multiplier": "10"
     },
     {
       "Id": 87,
@@ -790,7 +790,7 @@
       "X": -12,
       "Y": -46,
       "CanRaid": "true",
-      "Multiplier": "15"
+      "Multiplier": "10"
     },
     {
       "Id": 96,
@@ -818,7 +818,7 @@
       "X": -51,
       "Y": -48,
       "CanRaid": "true",
-      "Multiplier": "25"
+      "Multiplier": "10"
     }
   ]
 }

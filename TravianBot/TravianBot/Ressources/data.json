@@ -342,7 +342,7 @@
       "X": -22,
       "Y": -43,
       "CanRaid": "true",
-      "Multiplier": "20"
+      "Multiplier": "25"
     },
     {
       "Id": 32,
@@ -475,7 +475,7 @@
       "X": -17,
       "Y": -53,
       "CanRaid": "true",
-      "Multiplier": "1"
+      "Multiplier": "3"
     },
     {
       "Id": 51,

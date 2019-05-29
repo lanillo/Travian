@@ -621,7 +621,7 @@
       "Id": 71,
       "X": -44,
       "Y": -62,
-      "CanRaid": "false",
+      "CanRaid": "true",
       "Multiplier": "10"
     },
     {
